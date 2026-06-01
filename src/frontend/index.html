@@ -3,39 +3,179 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>InnovVentas — Demo del Chatbot Nova</title>
+  <title>InnovVentas — Tecnología con asistencia inteligente | Nova</title>
+  <meta name="description" content="InnovVentas: tienda de tecnología en Perú con Nova, el asistente virtual que resuelve tus dudas de productos, pagos, envíos y soporte 24/7." />
   <style>
-    body{font-family:system-ui,Segoe UI,Roboto,sans-serif;margin:0;background:#f1f5f9;color:#1e293b}
-    header{background:#2563eb;color:#fff;padding:28px 20px;text-align:center}
-    main{max-width:760px;margin:40px auto;padding:0 20px}
-    .card{background:#fff;border-radius:12px;padding:24px;box-shadow:0 2px 10px rgba(0,0,0,.06);margin-bottom:20px}
-    code{background:#e2e8f0;padding:2px 6px;border-radius:4px;font-size:13px}
-    h1{margin:0;font-size:26px}
+    :root{
+      --brand:#2563eb; --brand-dark:#1e3a8a; --accent:#f59e0b;
+      --ink:#0f172a; --muted:#64748b; --line:#e2e8f0; --bg:#f8fafc; --card:#fff;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:"Segoe UI",system-ui,Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.5}
+    a{color:inherit}
+    .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+
+    /* ---------- Navbar ---------- */
+    .nav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.9);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+    .nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+    .logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:19px;letter-spacing:-.3px}
+    .logo .mark{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));display:grid;place-items:center;color:#fff;font-size:18px}
+    .logo b{color:var(--brand)}
+    .nav-links{display:flex;gap:26px;font-size:14px;color:var(--muted)}
+    .nav-links a{text-decoration:none}
+    .nav-links a:hover{color:var(--brand)}
+    .badge{font-size:12px;background:#eff6ff;color:var(--brand);padding:5px 11px;border-radius:999px;font-weight:600;border:1px solid #dbeafe}
+    @media(max-width:720px){.nav-links{display:none}}
+
+    /* ---------- Hero ---------- */
+    .hero{background:linear-gradient(135deg,var(--brand-dark),var(--brand));color:#fff;padding:72px 0 84px;position:relative;overflow:hidden}
+    .hero:after{content:"";position:absolute;right:-120px;top:-120px;width:380px;height:380px;background:radial-gradient(circle,rgba(245,158,11,.25),transparent 70%)}
+    .hero .tag{display:inline-block;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);padding:6px 14px;border-radius:999px;font-size:13px;margin-bottom:20px}
+    .hero h1{font-size:42px;line-height:1.1;margin:0 0 16px;font-weight:800;letter-spacing:-1px;max-width:640px}
+    .hero p{font-size:18px;opacity:.92;max-width:560px;margin:0 0 28px}
+    .cta{display:inline-flex;align-items:center;gap:9px;background:#fff;color:var(--brand-dark);font-weight:700;padding:13px 22px;border-radius:10px;text-decoration:none;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .cta:hover{transform:translateY(-1px)}
+    .hero-stats{display:flex;gap:34px;margin-top:42px;flex-wrap:wrap}
+    .hero-stats div span{display:block;font-size:28px;font-weight:800}
+    .hero-stats div small{opacity:.8;font-size:13px}
+
+    /* ---------- Sections ---------- */
+    section{padding:66px 0}
+    .eyebrow{color:var(--brand);font-weight:700;font-size:13px;letter-spacing:.6px;text-transform:uppercase}
+    h2{font-size:30px;margin:8px 0 8px;letter-spacing:-.5px}
+    .lead{color:var(--muted);max-width:620px;margin:0 0 36px}
+
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+    @media(max-width:860px){.grid{grid-template-columns:1fr 1fr}}
+    @media(max-width:560px){.grid{grid-template-columns:1fr}}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:24px;transition:.18s}
+    .card:hover{box-shadow:0 10px 28px rgba(15,23,42,.08);transform:translateY(-3px);border-color:#cbd5e1}
+    .card .ico{width:46px;height:46px;border-radius:11px;background:#eff6ff;color:var(--brand);display:grid;place-items:center;font-size:22px;margin-bottom:14px}
+    .card h3{margin:0 0 6px;font-size:17px}
+    .card p{margin:0;color:var(--muted);font-size:14px}
+
+    /* ---------- Integration ---------- */
+    .panel{background:#0f172a;color:#e2e8f0;border-radius:16px;padding:36px;display:grid;grid-template-columns:1.1fr 1fr;gap:32px;align-items:center}
+    @media(max-width:780px){.panel{grid-template-columns:1fr}}
+    .panel h2{color:#fff}
+    .panel p{color:#94a3b8}
+    pre{background:#1e293b;border:1px solid #334155;border-radius:10px;padding:18px;overflow:auto;margin:0}
+    code{font-family:"Cascadia Code",Consolas,monospace;font-size:13px;color:#7dd3fc}
+    .pill-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+    .pill{font-size:12px;background:#1e293b;border:1px solid #334155;color:#cbd5e1;padding:5px 11px;border-radius:999px}
+
+    /* ---------- Footer ---------- */
+    footer{background:#fff;border-top:1px solid var(--line);padding:48px 0 32px;color:var(--muted);font-size:14px}
+    .foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:28px}
+    @media(max-width:680px){.foot-grid{grid-template-columns:1fr}}
+    footer h4{color:var(--ink);font-size:14px;margin:0 0 12px;text-transform:uppercase;letter-spacing:.5px}
+    footer a{text-decoration:none}
+    footer a:hover{color:var(--brand)}
+    .foot-li{margin-bottom:8px;display:flex;gap:8px}
+    .copy{border-top:1px solid var(--line);margin-top:34px;padding-top:20px;text-align:center;font-size:13px}
   </style>
 </head>
 <body>
-  <header>
-    <h1>🛒 InnovVentas</h1>
-    <p>Tienda de tecnología — Demo del asistente virtual <strong>Nova</strong></p>
+
+  <!-- ====== Navbar ====== -->
+  <nav class="nav">
+    <div class="wrap">
+      <div class="logo"><span class="mark">⚡</span> Innov<b>Ventas</b></div>
+      <div class="nav-links">
+        <a href="#asistente">Asistente Nova</a>
+        <a href="#ayuda">Qué resuelve</a>
+        <a href="#integracion">Integración</a>
+        <a href="dashboard.html">Métricas</a>
+      </div>
+      <span class="badge">● Nova en línea 24/7</span>
+    </div>
+  </nav>
+
+  <!-- ====== Hero ====== -->
+  <header class="hero" id="asistente">
+    <div class="wrap">
+      <span class="tag">🤖 Asistente virtual con IA</span>
+      <h1>Tu tienda de tecnología, con respuestas al instante</h1>
+      <p>Conoce a <strong>Nova</strong>, el asistente virtual de InnovVentas. Resuelve dudas sobre
+      productos, métodos de pago, envíos y soporte — todos los días, a toda hora.</p>
+      <a class="cta" href="#" onclick="document.getElementById('nova-fab')?.click();return false;">
+        💬 Conversar con Nova
+      </a>
+      <div class="hero-stats">
+        <div><span>24/7</span><small>Atención sin esperas</small></div>
+        <div><span>&lt;2s</span><small>Tiempo de respuesta</small></div>
+        <div><span>18+</span><small>Temas que domina</small></div>
+      </div>
+    </div>
   </header>
-  <main>
-    <div class="card">
-      <h2>Prueba el chatbot</h2>
-      <p>Haz clic en el botón <strong>💬</strong> de la esquina inferior derecha y pregúntale a Nova sobre
-      productos, métodos de pago, envíos, garantías o devoluciones.</p>
-      <p>Ejemplos: <em>"¿aceptan yape?"</em>, <em>"¿cuánto demora el envío a provincia?"</em>,
-      <em>"se me malogró mi laptop, qué hago"</em>.</p>
+
+  <!-- ====== Qué resuelve (alineado a las FAQs reales) ====== -->
+  <section id="ayuda">
+    <div class="wrap">
+      <span class="eyebrow">En qué te ayuda</span>
+      <h2>Todo el ciclo de compra, cubierto</h2>
+      <p class="lead">Nova está entrenada con las consultas más frecuentes de nuestros clientes,
+      organizadas en seis áreas clave.</p>
+      <div class="grid">
+        <div class="card"><div class="ico">🔍</div><h3>Productos y especificaciones</h3><p>Características técnicas, disponibilidad de stock y garantía de tus equipos.</p></div>
+        <div class="card"><div class="ico">🏷️</div><h3>Precios y promociones</h3><p>Precios con IGV, descuentos, cupones y ofertas vigentes.</p></div>
+        <div class="card"><div class="ico">💳</div><h3>Métodos de pago</h3><p>Yape, Plin, tarjetas Visa/Mastercard, transferencias y cuotas sin intereses.</p></div>
+        <div class="card"><div class="ico">🛒</div><h3>Proceso de compra</h3><p>Guía paso a paso, compra como invitado y cómo modificar o cancelar tu pedido.</p></div>
+        <div class="card"><div class="ico">🚚</div><h3>Envíos y rastreo</h3><p>Tiempos y costos a Lima y provincias, envío express y seguimiento de pedidos.</p></div>
+        <div class="card"><div class="ico">🔧</div><h3>Soporte y devoluciones</h3><p>Garantías, devoluciones en 30 días y soporte técnico post-venta.</p></div>
+      </div>
     </div>
-    <div class="card">
-      <h3>¿Cómo se integra en una web real?</h3>
-      <p>Basta con pegar estas dos líneas antes de <code>&lt;/body&gt;</code>:</p>
-      <pre><code>&lt;script&gt;window.NOVA_API_URL = "https://TU-BACKEND.onrender.com";&lt;/script&gt;
+  </section>
+
+  <!-- ====== Integración (ángulo técnico/académico) ====== -->
+  <section id="integracion" style="padding-top:0">
+    <div class="wrap">
+      <div class="panel">
+        <div>
+          <span class="eyebrow" style="color:#7dd3fc">Integración</span>
+          <h2>Se instala con dos líneas</h2>
+          <p>El widget de Nova es liviano y autocontenido. Se añade a cualquier página del sitio
+          de InnovVentas sin frameworks ni dependencias.</p>
+          <div class="pill-row">
+            <span class="pill">FastAPI</span><span class="pill">Groq · Llama 3.3</span>
+            <span class="pill">PostgreSQL</span><span class="pill">Render</span><span class="pill">Netlify</span>
+          </div>
+        </div>
+        <pre><code>&lt;script&gt;
+  window.NOVA_API_URL =
+   "https://innovventas-chatbot-rz1k.onrender.com";
+&lt;/script&gt;
 &lt;script src="widget.js"&gt;&lt;/script&gt;</code></pre>
+      </div>
     </div>
-  </main>
+  </section>
+
+  <!-- ====== Footer (datos reales de InnovVentas) ====== -->
+  <footer>
+    <div class="wrap foot-grid">
+      <div>
+        <div class="logo" style="margin-bottom:12px"><span class="mark">⚡</span> Innov<b>Ventas</b></div>
+        <p style="margin:0;max-width:300px">Comercialización de productos tecnológicos en el mercado digital peruano.</p>
+      </div>
+      <div>
+        <h4>Contacto</h4>
+        <div class="foot-li">📧 <a href="mailto:info@innovventas.pe">info@innovventas.pe</a></div>
+        <div class="foot-li">🛠️ <a href="mailto:soporte@innovventas.pe">soporte@innovventas.pe</a></div>
+        <div class="foot-li">📞 01-234-5678</div>
+        <div class="foot-li">📱 WhatsApp +51 999 123 456</div>
+      </div>
+      <div>
+        <h4>Tienda física</h4>
+        <div class="foot-li">🏪 Jr. Lampa 123, Cercado de Lima</div>
+        <div class="foot-li">🕘 Lun–Sáb · 9:00 a.m. – 7:00 p.m.</div>
+        <div class="foot-li">🔒 Pagos seguros · PCI DSS · SSL</div>
+      </div>
+    </div>
+    <div class="wrap copy">© 2026 InnovVentas · Asistente virtual Nova · Demo del trabajo final AI-900T00 (SENATI)</div>
+  </footer>
 
   <!-- ====== Widget del chatbot ====== -->
-  <!-- IMPORTANTE: cambia esta URL por la de tu backend en Render tras desplegarlo. -->
+  <!-- IMPORTANTE: esta URL apunta al backend en Render. -->
   <script>window.NOVA_API_URL = "https://innovventas-chatbot-rz1k.onrender.com";</script>
   <script src="widget.js"></script>
 </body>

@@ -3,83 +3,175 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>InnovVentas — Dashboard de Métricas del Chatbot</title>
+  <title>InnovVentas — Panel de Métricas de Nova</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <style>
-    body{font-family:system-ui,Segoe UI,Roboto,sans-serif;margin:0;background:#f1f5f9;color:#1e293b}
-    header{background:#2563eb;color:#fff;padding:24px 20px}
-    header h1{margin:0;font-size:22px}
-    header p{margin:4px 0 0;opacity:.9;font-size:14px}
-    main{max-width:960px;margin:28px auto;padding:0 20px}
-    .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:24px}
-    .kpi{background:#fff;border-radius:12px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,.06);text-align:center}
-    .kpi .val{font-size:34px;font-weight:700;color:#2563eb}
-    .kpi .lbl{font-size:13px;color:#64748b;margin-top:6px}
-    .card{background:#fff;border-radius:12px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,.06)}
-    .bar{display:flex;gap:12px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
-    button{background:#2563eb;color:#fff;border:none;border-radius:8px;padding:9px 16px;cursor:pointer;font-size:14px}
-    input{border:1px solid #cbd5e1;border-radius:8px;padding:8px 10px;font-size:13px;width:340px;max-width:100%}
-    #status{font-size:13px;color:#64748b}
+    :root{
+      --brand:#2563eb; --brand-dark:#1e3a8a; --accent:#f59e0b; --good:#16a34a; --warn:#dc2626;
+      --ink:#0f172a; --muted:#64748b; --line:#e2e8f0; --bg:#f1f5f9; --card:#fff;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:"Segoe UI",system-ui,Roboto,Arial,sans-serif;color:var(--ink);background:var(--bg)}
+    .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+    a{color:inherit}
+
+    .nav{background:#fff;border-bottom:1px solid var(--line)}
+    .nav .wrap{display:flex;align-items:center;justify-content:space-between;height:62px}
+    .logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px}
+    .logo .mark{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));display:grid;place-items:center;color:#fff}
+    .logo b{color:var(--brand)}
+    .nav-links{display:flex;gap:22px;font-size:14px;color:var(--muted)}
+    .nav-links a{text-decoration:none}.nav-links a:hover{color:var(--brand)}
+    .nav-links a.active{color:var(--brand);font-weight:700}
+
+    .head{padding:30px 0 6px}
+    .head h1{margin:0;font-size:26px;letter-spacing:-.5px}
+    .head p{margin:6px 0 0;color:var(--muted);font-size:14px}
+    .toolbar{display:flex;align-items:center;gap:14px;margin:18px 0 26px;flex-wrap:wrap}
+    button{background:var(--brand);color:#fff;border:none;border-radius:9px;padding:10px 16px;cursor:pointer;font-size:14px;font-weight:600}
+    button:hover{background:var(--brand-dark)}
+    #status{font-size:13px;color:var(--muted)}
+    .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--good);margin-right:6px;vertical-align:middle}
+    details{font-size:13px;color:var(--muted)}
+    details input{border:1px solid #cbd5e1;border-radius:7px;padding:7px 10px;font-size:13px;width:360px;max-width:100%;margin-top:6px}
+
+    .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:22px}
+    @media(max-width:820px){.kpis{grid-template-columns:1fr 1fr}}
+    .kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;position:relative;overflow:hidden}
+    .kpi .ico{position:absolute;right:16px;top:16px;font-size:22px;opacity:.25}
+    .kpi .val{font-size:32px;font-weight:800;letter-spacing:-1px;line-height:1}
+    .kpi .lbl{font-size:13px;color:var(--muted);margin-top:8px}
+    .kpi .sub{font-size:12px;margin-top:6px;font-weight:600}
+
+    .charts{display:grid;grid-template-columns:1.6fr 1fr;gap:18px}
+    @media(max-width:820px){.charts{grid-template-columns:1fr}}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px}
+    .card h3{margin:0 0 4px;font-size:16px}
+    .card .hint{margin:0 0 14px;font-size:13px;color:var(--muted)}
+    .empty{color:var(--muted);font-size:14px;text-align:center;padding:30px 0}
+    footer{text-align:center;color:var(--muted);font-size:13px;padding:30px 0}
   </style>
 </head>
 <body>
-  <header>
-    <h1>📊 Dashboard de Métricas — Chatbot Nova</h1>
-    <p>InnovVentas · datos en tiempo real desde <code>/api/metrics</code></p>
-  </header>
-  <main>
-    <div class="bar">
-      <label>API:</label>
-      <input id="api" />
+
+  <nav class="nav">
+    <div class="wrap">
+      <div class="logo"><span class="mark">⚡</span> Innov<b>Ventas</b></div>
+      <div class="nav-links">
+        <a href="index.html">Inicio</a>
+        <a href="index.html#ayuda">Asistente</a>
+        <a href="dashboard.html" class="active">Métricas</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="wrap">
+    <div class="head">
+      <h1>📊 Panel de Métricas — Asistente Nova</h1>
+      <p>Indicadores de desempeño del chatbot de InnovVentas, en tiempo real.</p>
+    </div>
+
+    <div class="toolbar">
       <button onclick="cargar()">🔄 Actualizar</button>
       <span id="status"></span>
+      <details style="margin-left:auto">
+        <summary style="cursor:pointer">⚙ Configurar fuente de datos</summary>
+        <input id="api" />
+      </details>
     </div>
 
+    <!-- KPIs -->
     <div class="kpis">
-      <div class="kpi"><div class="val" id="k-sessions">—</div><div class="lbl">Sesiones totales</div></div>
-      <div class="kpi"><div class="val" id="k-msgs">—</div><div class="lbl">Mensajes de usuarios</div></div>
-      <div class="kpi"><div class="val" id="k-csat">—</div><div class="lbl">CSAT promedio (1-5)</div></div>
-      <div class="kpi"><div class="val" id="k-fallback">—</div><div class="lbl">% Fallback (no entendidos)</div></div>
+      <div class="kpi"><span class="ico">💬</span><div class="val" id="k-sessions">—</div><div class="lbl">Sesiones de conversación</div></div>
+      <div class="kpi"><span class="ico">📨</span><div class="val" id="k-msgs">—</div><div class="lbl">Mensajes de usuarios</div></div>
+      <div class="kpi"><span class="ico">⭐</span><div class="val" id="k-csat">—</div><div class="lbl">CSAT promedio</div><div class="sub" id="k-csat-stars" style="color:var(--accent)"></div></div>
+      <div class="kpi"><span class="ico">🎯</span><div class="val" id="k-compr">—</div><div class="lbl">Tasa de comprensión</div><div class="sub" id="k-fallback" style="color:var(--muted)"></div></div>
     </div>
 
-    <div class="card">
-      <h3>Top 10 intenciones más consultadas</h3>
-      <canvas id="chart" height="120"></canvas>
+    <!-- Charts -->
+    <div class="charts">
+      <div class="card">
+        <h3>Temas más consultados</h3>
+        <p class="hint">Top 10 intenciones detectadas en los mensajes de los clientes.</p>
+        <div id="intents-empty" class="empty" style="display:none">Aún no hay consultas registradas.</div>
+        <canvas id="intents" height="240"></canvas>
+      </div>
+      <div class="card">
+        <h3>Comprensión del bot</h3>
+        <p class="hint">Consultas entendidas vs. no entendidas (fallback).</p>
+        <canvas id="compr" height="240"></canvas>
+      </div>
     </div>
-  </main>
+  </div>
+
+  <footer>InnovVentas · Datos desde <code>/api/metrics</code> · Trabajo final AI-900T00 (SENATI)</footer>
 
   <script>
-    // Misma URL que el widget. Cámbiala por la de tu backend en Render si difiere.
     const DEFAULT_API = window.NOVA_API_URL || "https://innovventas-chatbot-rz1k.onrender.com";
-    document.getElementById("api").value = DEFAULT_API;
-    let chart = null;
+    const apiInput = document.getElementById("api");
+    apiInput.value = DEFAULT_API;
 
-    async function cargar() {
-      const base = document.getElementById("api").value.replace(/\/$/, "");
+    // Nombres legibles para las intenciones (alineado a las FAQs de init.sql)
+    const LABELS = {
+      saludo:"Saludo", consulta_producto:"Consulta de producto", disponibilidad:"Disponibilidad / stock",
+      garantia:"Garantía", precio:"Precio", descuentos:"Descuentos", metodo_pago:"Métodos de pago",
+      cuotas:"Cuotas / financiamiento", seguridad_pago:"Seguridad de pago", proceso_compra:"Proceso de compra",
+      cancelar_pedido:"Cancelar pedido", envio_tiempo:"Tiempo de envío", costo_envio:"Costo de envío",
+      rastreo_pedido:"Rastreo de pedido", devolucion:"Devoluciones", soporte_tecnico:"Soporte técnico",
+      contacto:"Contacto", despedida:"Despedida", fallback:"No entendido"
+    };
+    const nice = k => LABELS[k] || k;
+
+    let chartIntents = null, chartCompr = null;
+
+    async function cargar(){
+      const base = apiInput.value.replace(/\/$/,"");
       const st = document.getElementById("status");
-      st.textContent = "Cargando...";
-      try {
-        const r = await fetch(base + "/api/metrics");
-        const m = await r.json();
+      st.innerHTML = "Cargando…";
+      try{
+        const m = await (await fetch(base + "/api/metrics")).json();
+
+        // KPIs
         document.getElementById("k-sessions").textContent = m.total_sessions ?? 0;
         document.getElementById("k-msgs").textContent = m.total_user_messages ?? 0;
-        document.getElementById("k-csat").textContent = m.csat_avg ?? "—";
-        document.getElementById("k-fallback").textContent = (m.fallback_rate_pct ?? 0) + "%";
 
-        const labels = (m.top_intents || []).map(i => i.intent);
-        const data = (m.top_intents || []).map(i => i.total);
-        if (chart) chart.destroy();
-        chart = new Chart(document.getElementById("chart"), {
-          type: "bar",
-          data: { labels, datasets: [{ label: "Consultas", data, backgroundColor: "#2563eb" }] },
-          options: { indexAxis: "y", plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+        const csat = m.csat_avg;
+        document.getElementById("k-csat").textContent = csat != null ? csat.toFixed(2) : "—";
+        document.getElementById("k-csat-stars").textContent =
+          csat != null ? "★".repeat(Math.round(csat)) + "☆".repeat(5-Math.round(csat)) : "Sin calificaciones aún";
+
+        const fb = m.fallback_rate_pct ?? 0;
+        const compr = Math.max(0, 100 - fb);
+        document.getElementById("k-compr").textContent = compr.toFixed(1) + "%";
+        document.getElementById("k-fallback").textContent = "Fallback: " + fb + "%";
+
+        // Top intents (barra horizontal)
+        const items = m.top_intents || [];
+        document.getElementById("intents-empty").style.display = items.length ? "none" : "block";
+        const labels = items.map(i => nice(i.intent));
+        const data = items.map(i => i.total);
+        if(chartIntents) chartIntents.destroy();
+        chartIntents = new Chart(document.getElementById("intents"), {
+          type:"bar",
+          data:{labels,datasets:[{label:"Consultas",data,backgroundColor:"#2563eb",borderRadius:6}]},
+          options:{indexAxis:"y",plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,ticks:{precision:0}}}}
         });
-        st.textContent = "Actualizado " + new Date().toLocaleTimeString();
-      } catch (e) {
-        st.textContent = "⚠️ No se pudo conectar con la API.";
+
+        // Comprensión (doughnut)
+        if(chartCompr) chartCompr.destroy();
+        chartCompr = new Chart(document.getElementById("compr"), {
+          type:"doughnut",
+          data:{labels:["Entendidas","No entendidas"],datasets:[{data:[compr, fb],backgroundColor:["#16a34a","#dc2626"]}]},
+          options:{cutout:"68%",plugins:{legend:{position:"bottom"}}}
+        });
+
+        st.innerHTML = '<span class="dot"></span>Actualizado ' + new Date().toLocaleTimeString();
+      }catch(e){
+        st.innerHTML = '<span class="dot" style="background:#dc2626"></span>No se pudo conectar con la API.';
       }
     }
     cargar();
+    setInterval(cargar, 60000); // auto-refresh cada 60 s
   </script>
 </body>
 </html>
