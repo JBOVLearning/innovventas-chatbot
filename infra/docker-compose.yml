@@ -1,0 +1,46 @@
+# Levanta TODO en local: PostgreSQL + Backend FastAPI.
+# Uso:  cd infra && docker-compose up -d
+# Variables: crea un archivo infra/.env con GROQ_API_KEY (y DB_PASSWORD opcional).
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: innovventas_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: innovventas_bot
+      POSTGRES_USER: botuser
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-botpass123}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U botuser -d innovventas_bot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ../src/backend
+      dockerfile: Dockerfile
+    container_name: innovventas_backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://botuser:${DB_PASSWORD:-botpass123}@postgres:5432/innovventas_bot
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
+      GROQ_MODEL: ${GROQ_MODEL:-llama-3.3-70b-versatile}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-*}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ../src/backend:/app
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+volumes:
+  pgdata:
+    name: innovventas_pgdata

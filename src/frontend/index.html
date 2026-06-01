@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>InnovVentas — Demo del Chatbot Nova</title>
+  <style>
+    body{font-family:system-ui,Segoe UI,Roboto,sans-serif;margin:0;background:#f1f5f9;color:#1e293b}
+    header{background:#2563eb;color:#fff;padding:28px 20px;text-align:center}
+    main{max-width:760px;margin:40px auto;padding:0 20px}
+    .card{background:#fff;border-radius:12px;padding:24px;box-shadow:0 2px 10px rgba(0,0,0,.06);margin-bottom:20px}
+    code{background:#e2e8f0;padding:2px 6px;border-radius:4px;font-size:13px}
+    h1{margin:0;font-size:26px}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🛒 InnovVentas</h1>
+    <p>Tienda de tecnología — Demo del asistente virtual <strong>Nova</strong></p>
+  </header>
+  <main>
+    <div class="card">
+      <h2>Prueba el chatbot</h2>
+      <p>Haz clic en el botón <strong>💬</strong> de la esquina inferior derecha y pregúntale a Nova sobre
+      productos, métodos de pago, envíos, garantías o devoluciones.</p>
+      <p>Ejemplos: <em>"¿aceptan yape?"</em>, <em>"¿cuánto demora el envío a provincia?"</em>,
+      <em>"se me malogró mi laptop, qué hago"</em>.</p>
+    </div>
+    <div class="card">
+      <h3>¿Cómo se integra en una web real?</h3>
+      <p>Basta con pegar estas dos líneas antes de <code>&lt;/body&gt;</code>:</p>
+      <pre><code>&lt;script&gt;window.NOVA_API_URL = "https://TU-BACKEND.onrender.com";&lt;/script&gt;
+&lt;script src="widget.js"&gt;&lt;/script&gt;</code></pre>
+    </div>
+  </main>
+
+  <!-- ====== Widget del chatbot ====== -->
+  <!-- IMPORTANTE: cambia esta URL por la de tu backend en Render tras desplegarlo. -->
+  <script>window.NOVA_API_URL = "http://localhost:8000";</script>
+  <script src="widget.js"></script>
+</body>
+</html>

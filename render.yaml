@@ -1,0 +1,18 @@
+# Blueprint opcional para Render (Infrastructure as Code).
+# Puedes crear el servicio manualmente (ver README_DEPLOY.md) o usar este archivo.
+services:
+  - type: web
+    name: innovventas-backend
+    runtime: python
+    rootDir: src/backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        sync: false      # se configura en el dashboard (secreto)
+      - key: GROQ_API_KEY
+        sync: false      # se configura en el dashboard (secreto)
+      - key: GROQ_MODEL
+        value: llama-3.3-70b-versatile
+      - key: ALLOWED_ORIGINS
+        value: "*"       # cámbialo a tu URL de Netlify cuando la tengas

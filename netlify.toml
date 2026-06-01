@@ -1,0 +1,4 @@
+# Configuración de Netlify — solo publica el frontend estático.
+[build]
+  publish = "src/frontend"
+  command = ""
