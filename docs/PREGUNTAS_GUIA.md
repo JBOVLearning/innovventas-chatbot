@@ -38,25 +38,28 @@
 
 ## Pregunta 2: Plataformas y Herramientas Recomendadas
 
-### Opción Seleccionada: Stack Propio con Azure AI
+### Opción Seleccionada: Stack Propio (propuesto en Azure, implementado en capa gratuita)
 
-| Componente | Tecnología | Justificación |
-|------------|-----------|---------------|
-| NLP / Intenciones | Azure AI Language (CLU) | Alineado al curso AI-900, sin vendor lock-in en NLP básico |
-| Backend API | Python + FastAPI | Liviano, rápido, excelente para APIs REST |
-| Base de datos | PostgreSQL (Docker) | Robusto, open source, perfecto para métricas |
-| Frontend widget | HTML/CSS/JS vanilla | Embebible en cualquier sitio, sin dependencias |
-| Contenedores | Docker + Compose | Portabilidad, fácil despliegue en cualquier servidor |
-| Monitoreo | Custom dashboard (Chart.js) | Métricas en tiempo real sin herramientas externas costosas |
+| Componente | Propuesto (Azure) | Implementado (capa gratuita) | Justificación |
+|------------|-------------------|------------------------------|---------------|
+| NLP / Intenciones | Azure AI Language (CLU) | **Groq + Llama 3.3** | FAQs como contexto; entiende lenguaje libre sin entrenamiento ni costo |
+| Backend API | Python + FastAPI | Python + FastAPI | Liviano, rápido, excelente para APIs REST (*idéntico*) |
+| Base de datos | Azure DB for PostgreSQL | **PostgreSQL en Neon** | Robusto, open source, perfecto para métricas |
+| Frontend widget | HTML/CSS/JS vanilla | HTML/CSS/JS vanilla | Embebible en cualquier sitio, sin dependencias |
+| Hosting | Azure Container Instances | **Render + Netlify** | Despliegue gratuito; esconde las API keys del navegador |
+| Monitoreo | Custom dashboard (Chart.js) | Custom dashboard (Chart.js) | Métricas en tiempo real sin herramientas externas costosas |
+
+> El motivo del cambio fue el **agotamiento del crédito de estudiante de Azure**. Gracias a la
+> arquitectura desacoplada, solo cambió el proveedor (vía variables de entorno), no el código.
 
 ### Alternativas Evaluadas
 
 | Plataforma | Ventaja | Desventaja |
 |------------|---------|------------|
-| Azure Bot Service | Integración nativa con Azure | Costo elevado para MVP |
+| Azure Bot Service / Copilot Studio | Integración nativa con Azure, no-code | Costo elevado para MVP / requiere suscripción activa |
 | Dialogflow (Google) | Fácil de usar | No es Azure → no alineado al curso |
 | Botpress | Open source completo | Complejidad de configuración |
-| **FastAPI + Azure CLU** | Control total + Azure alineado al curso | Requiere más desarrollo inicial |
+| **FastAPI + LLM (Groq/Azure CLU)** | Control total, costo cero, motor intercambiable | Requiere más desarrollo inicial |
 
 ---
 
@@ -86,7 +89,7 @@
 
 | Desafío | Descripción | Solución |
 |---------|-------------|----------|
-| Comprensión de lenguaje natural | El usuario escribe de forma impredecible | Usar Azure CLU con múltiples ejemplos de utterances por intención |
+| Comprensión de lenguaje natural | El usuario escribe de forma impredecible | LLM (Groq) con las FAQs como contexto; o Azure CLU con utterances por intención |
 | Escalabilidad del backend | Muchas consultas simultáneas | FastAPI + async/await + conexión pooling en PostgreSQL |
 | Integración con el sitio web existente | CORS, iframe, compatibilidad | Widget JS con `<script>` tag, configurar CORS en FastAPI |
 | Mantener FAQs actualizadas | El catálogo de productos cambia | Panel admin para editar FAQs directamente en PostgreSQL |
@@ -122,5 +125,5 @@ conversions    → sesiones que resultaron en compra
 
 ### Optimización Continua
 - Revisar mensajes con `intent = "fallback"` → agregarlos como nuevas FAQs
-- Retrain del modelo Azure CLU mensualmente con nuevos ejemplos
+- Ajustar el prompt y las FAQs del LLM (Groq), o re-entrenar el modelo CLU (Azure), con los nuevos casos
 - Heatmap de horarios con más consultas → ajustar recursos de servidor

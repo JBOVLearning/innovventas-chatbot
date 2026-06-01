@@ -120,12 +120,20 @@ Verificación de resolución → [Encuesta CSAT] → Cierre
 
 ### 3.1 Elección Tecnológica
 
-#### 3.1.1 Azure AI Language — Conversational Language Understanding (CLU)
-**Justificación:** Alineado directamente con el curso AI-900T00 de Microsoft Azure. CLU permite:
+> **Arquitectura propuesta vs. prototipo real:** la solución se diseñó sobre **Azure AI Language**
+> (alineada al curso AI-900). Como el crédito de estudiante de Azure se agotó, el prototipo
+> funcional se implementó con servicios de **capa gratuita equivalentes**: **Groq** (motor NLP),
+> **Neon** (PostgreSQL en la nube), **Render** (backend) y **Netlify** (frontend). El backend
+> FastAPI es idéntico en ambos casos; solo cambia el proveedor vía variables de entorno.
+
+#### 3.1.1 Motor NLP — Azure CLU *(propuesto)* / Groq + Llama 3.3 *(implementado)*
+**Justificación (Azure CLU):** Alineado directamente con el curso AI-900T00 de Microsoft Azure. CLU permite:
 - Entrenar un modelo de intenciones personalizado con ejemplos en español
 - Detectar entidades (nombre de producto, número de orden)
 - Integrarse via REST API desde cualquier backend
 - Escalar automáticamente según demanda
+
+**Justificación (Groq — lo realmente usado):** LLM de capa gratuita, sin costo ni entrenamiento manual. Las 18 FAQs se inyectan en el *system prompt* como base de conocimiento: el bot entiende lenguaje libre (sinónimos, typos, frases indirectas) pero responde ciñéndose a la información de InnovVentas. Intercambiable con Azure CLU sin tocar el resto del sistema.
 
 #### 3.1.2 Python + FastAPI (Backend)
 **Justificación:** FastAPI es el framework Python más moderno para APIs REST:
@@ -139,7 +147,7 @@ Verificación de resolución → [Encuesta CSAT] → Cierre
 - Open source y robusto — ideal para almacenar logs de conversaciones y métricas
 - JSON nativo — útil para almacenar contexto de conversaciones
 - Excelente soporte en Docker para desarrollo local
-- Escalable a Azure Database for PostgreSQL cuando se migre a producción
+- En producción se usó **Neon** (PostgreSQL gestionado, capa gratuita); migrable a Azure Database for PostgreSQL sin cambios de código (todo vía `DATABASE_URL`)
 
 #### 3.1.4 Docker + Docker Compose (Infraestructura)
 **Justificación:**
@@ -150,9 +158,15 @@ Verificación de resolución → [Encuesta CSAT] → Cierre
 #### 3.1.5 HTML/CSS/JS Vanilla (Widget Frontend)
 **Justificación:**
 - Sin dependencias externas → no rompe el sitio web de InnovVentas
-- Archivo único auto-contenido (`chatbot-widget.js`)
+- Archivo único auto-contenido (`widget.js`)
 - Compatible con cualquier framework web del cliente (WordPress, Shopify, custom)
 - Tamaño reducido → no impacta el rendimiento del sitio
+
+#### 3.1.6 Hosting — Render (backend) + Netlify (frontend)
+**Justificación:**
+- **Render** (capa gratuita) ejecuta el backend FastAPI y guarda en secreto las API keys (rol equivalente a Azure Container Instances)
+- **Netlify** (capa gratuita) publica el frontend estático (widget + dashboard)
+- La separación frontend/backend evita exponer credenciales en el navegador (patrón estándar de seguridad)
 
 ---
 
@@ -230,6 +244,6 @@ Verificación de resolución → [Encuesta CSAT] → Cierre
 
 ## 6. Conclusiones
 
-La implementación de un chatbot basado en Azure AI Language para InnovVentas representa una solución técnicamente sólida y económicamente viable que ataca directamente los problemas de baja conversión y alta tasa de abandono de carrito. El uso de Docker asegura portabilidad, PostgreSQL garantiza la trazabilidad de las interacciones, y Azure CLU proporciona la inteligencia conversacional necesaria para entender el lenguaje natural de los clientes peruanos.
+La implementación del chatbot para InnovVentas representa una solución técnicamente sólida y económicamente viable que ataca directamente los problemas de baja conversión y alta tasa de abandono de carrito. El uso de Docker asegura portabilidad, PostgreSQL garantiza la trazabilidad de las interacciones, y el motor de lenguaje natural —**Azure CLU** en la propuesta, **Groq + Llama 3.3** en el prototipo realmente desplegado— proporciona la inteligencia conversacional necesaria para entender a los clientes peruanos. El hecho de que la solución funcione con costo cero en capa gratuita y siga siendo migrable a Azure demuestra una arquitectura desacoplada y económicamente sostenible.
 
 La arquitectura propuesta es escalable: en una primera etapa funciona como MVP local, y en producción puede migrar fácilmente a Azure Container Instances + Azure Database for PostgreSQL sin cambios en el código.

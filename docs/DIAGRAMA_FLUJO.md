@@ -43,9 +43,9 @@ flowchart TD
     H1 --> H2[Ofrece pasos de solución\no inicia ticket de soporte]
     H2 --> Z
 
-    I --> I1[Azure CLU intenta\ndetectar intención]
-    I1 --> I2{¿Confianza > 70%?}
-    I2 --> |Sí| I3[Responde con FAQ correspondiente]
+    I --> I1[Motor NLP procesa el mensaje\nGroq + FAQs como contexto\n-propuesto: Azure CLU-]
+    I1 --> I2{¿Cubierto por las FAQs?}
+    I2 --> |Sí| I3[Responde con la FAQ correspondiente]
     I2 --> |No| X
 
     X[🔄 Fallback:\n'No entendí tu consulta.\n¿Puedo ayudarte con alguna\nde estas opciones?']
@@ -100,7 +100,7 @@ INICIO → IDENTIFICANDO_INTENCION → RESPONDIENDO → [RESOLVIENDO | ESCALANDO
 
 ### Detalle de Estados
 - **INICIO:** saludo automático del bot
-- **IDENTIFICANDO_INTENCION:** Azure CLU procesa el mensaje
+- **IDENTIFICANDO_INTENCION:** el motor NLP (Groq con FAQs como contexto; propuesto: Azure CLU) procesa el mensaje
 - **RESPONDIENDO:** bot entrega respuesta de la FAQ o consulta la BD
 - **RESOLVIENDO:** intercambio de mensajes hasta resolver la duda
 - **ESCALANDO:** 3 fallbacks consecutivos → derivar a humano

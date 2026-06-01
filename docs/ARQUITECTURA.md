@@ -6,36 +6,31 @@
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                    SITIO WEB INNOVVENTAS                 │
+│         SITIO WEB INNOVVENTAS        [Netlify / GH Pages]│
 │                                                         │
 │  ┌──────────────────────────────────────────────────┐   │
-│  │         Widget Chatbot (HTML/CSS/JS)              │   │
-│  │   <script src="chatbot-widget.js"></script>       │   │
+│  │      Widget Chatbot + Dashboard (HTML/CSS/JS)     │   │
+│  │        <script src="widget.js"></script>          │   │
 │  └────────────────────┬─────────────────────────────┘   │
 └───────────────────────┼─────────────────────────────────┘
-                        │ HTTP POST /api/chat
+                        │ HTTPS POST /api/chat (CORS)
                         ▼
 ┌───────────────────────────────────────────────────────────┐
-│              BACKEND (Docker Container)                    │
-│                                                           │
-│   ┌─────────────────────────────────────────────────┐    │
-│   │              FastAPI (Python)                    │    │
-│   │   POST /api/chat    → procesar mensaje           │    │
-│   │   GET  /api/metrics → métricas del dashboard     │    │
-│   │   GET  /api/faqs    → listar preguntas           │    │
+│              BACKEND  FastAPI (Python)        [Render]      │
+│   POST /api/chat   POST /api/feedback                      │
+│   GET  /api/metrics  GET /api/faqs                         │
 │   └──────────┬──────────────────┬────────────────────┘    │
 │              │                  │                          │
 │              ▼                  ▼                          │
-│   ┌──────────────────┐  ┌───────────────────────┐        │
-│   │  Azure AI        │  │  PostgreSQL           │        │
-│   │  Language (CLU)  │  │  (Docker Container)   │        │
-│   │                  │  │                       │        │
-│   │  - Detectar      │  │  - faqs               │        │
-│   │    intención     │  │  - chat_logs          │        │
-│   │  - Extraer       │  │  - sessions           │        │
-│   │    entidades     │  │  - feedback           │        │
-│   └──────────────────┘  └───────────────────────┘        │
+│   ┌──────────────────────┐  ┌───────────────────────┐    │
+│   │  MOTOR NLP            │  │  PostgreSQL           │    │
+│   │  Real: Groq (Llama)   │  │  Real: Neon (cloud)   │    │
+│   │  Prop.: Azure CLU     │  │  Local: Docker        │    │
+│   │  + 18 FAQs (contexto) │  │  faqs · chat_logs ·   │    │
+│   │  → respuesta grounded │  │  sessions · feedback  │    │
+│   └──────────────────────┘  └───────────────────────┘    │
 └───────────────────────────────────────────────────────────┘
+   Motor NLP y BD = piezas intercambiables (vía variables de entorno)
 ```
 
 ---
@@ -44,7 +39,7 @@
 
 ### Frontend — Widget Embebible
 - **Tecnología:** HTML5 + CSS3 + JavaScript Vanilla
-- **Archivo principal:** `chatbot-widget.js` (bundle auto-contenido)
+- **Archivo principal:** `widget.js` (bundle auto-contenido)
 - **Integración:** un solo `<script>` tag en cualquier página del sitio
 - **Características:** 
   - Botón flotante (FAB) en esquina inferior derecha
@@ -62,9 +57,10 @@
   - `POST /api/feedback` — guardar calificación CSAT
 
 ### NLP — Procesamiento de Lenguaje Natural
-- **Servicio:** Azure AI Language — Conversational Language Understanding (CLU)
-- **Alternativa offline:** matching por similitud coseno (para desarrollo sin créditos Azure)
-- **Umbral de confianza:** 0.70 (70%) — por debajo → fallback
+- **Implementado:** LLM de capa gratuita — **Groq** con `llama-3.3-70b-versatile`
+- **Técnica:** las 18 FAQs se inyectan en el *system prompt* como base de conocimiento (grounding); reglas estrictas para que el bot NO invente precios/specs fuera de las FAQs
+- **Propuesto (Azure):** Azure AI Language — CLU con umbral de confianza 0.70 → fallback
+- **Intercambiable:** se cambia de proveedor solo con variables de entorno (`GROQ_API_KEY` / `AZURE_CLU_*`)
 
 ### Base de Datos — PostgreSQL
 - **Versión:** PostgreSQL 16 (Docker)
@@ -131,8 +127,9 @@ services:
       - "8000:8000"
     environment:
       DATABASE_URL: postgresql://botuser:${DB_PASSWORD}@postgres:5432/innovventas_bot
-      AZURE_CLU_ENDPOINT: ${AZURE_CLU_ENDPOINT}
-      AZURE_CLU_KEY: ${AZURE_CLU_KEY}
+      GROQ_API_KEY: ${GROQ_API_KEY}
+      GROQ_MODEL: ${GROQ_MODEL:-llama-3.3-70b-versatile}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-*}
     depends_on:
       - postgres
 
@@ -146,13 +143,13 @@ volumes:
 
 ```
 1. Usuario escribe mensaje en el widget (Frontend)
-2. Widget hace POST /api/chat con { message, session_id }
-3. FastAPI recibe la petición
-4. FastAPI llama a Azure CLU para detectar intención + confianza
-5. Si confianza > 70%: buscar FAQ en PostgreSQL por intent
-   Si confianza ≤ 70%: retornar respuesta de fallback
-6. Guardar log en chat_logs (PostgreSQL)
-7. FastAPI retorna { response, intent, confidence }
+2. Widget hace POST /api/chat con { message, session_id, history }
+3. FastAPI recibe la petición y guarda el mensaje del usuario en chat_logs
+4. FastAPI envía el mensaje al LLM (Groq) junto con las 18 FAQs como contexto
+   (en la versión Azure: CLU detecta intención + confianza, umbral 0.70)
+5. El modelo responde ciñéndose a las FAQs; si no aplica → deriva a soporte
+6. Guardar la respuesta del bot en chat_logs (PostgreSQL)
+7. FastAPI retorna { response, session_id, intent }
 8. Widget muestra la respuesta al usuario
 ```
 

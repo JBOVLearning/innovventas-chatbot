@@ -9,6 +9,32 @@
 
 ---
 
+## 📌 Nota sobre la implementación (arquitectura propuesta vs. prototipo real)
+
+Este trabajo distingue entre dos arquitecturas, ambas válidas y documentadas:
+
+| | **Arquitectura propuesta (ideal)** | **Prototipo MVP implementado (real)** |
+|---|---|---|
+| Motor NLP | **Azure AI Language – CLU** (alineado al curso AI-900) | **LLM de capa gratuita (Groq · Llama 3.3)** |
+| Backend | FastAPI (Python) | FastAPI (Python) — *idéntico* |
+| Base de datos | Azure Database for PostgreSQL | **PostgreSQL en Neon** (capa gratuita) |
+| Hosting backend | Azure Container Instances | **Render** (capa gratuita) |
+| Hosting frontend | — | **Netlify / GitHub Pages** |
+
+**¿Por qué dos arquitecturas?** La solución *propuesta* usa Azure AI Language por su alineación
+con el curso AI-900T00. Sin embargo, al agotarse el crédito de estudiante de Azure, el prototipo
+funcional se implementó con servicios de **capa gratuita equivalentes** (Groq como motor NLP,
+Neon como base de datos, Render y Netlify como hosting). El diseño es **portable**: el backend
+FastAPI permanece igual y solo cambia el proveedor del motor de lenguaje, demostrando una
+arquitectura desacoplada y migrable a Azure cuando se disponga de créditos.
+
+> 🌐 **Demo funcional en vivo:**
+> - **Chatbot (frontend):** `https://[tu-sitio].netlify.app`
+> - **API (backend):** `https://innovventas-chatbot-rz1k.onrender.com`
+> - **Dashboard de métricas:** `https://[tu-sitio].netlify.app/dashboard.html`
+
+---
+
 # 1. DESCRIPCIÓN DE NECESIDADES DEL CLIENTE Y PROBLEMAS IDENTIFICADOS
 
 ## 1.1 Situación Actual de InnovVentas
@@ -73,8 +99,8 @@ El chatbot gira en torno a **6 módulos temáticos** con un total de 25 FAQs ide
                            │
               ┌────────────▼────────────┐
               │  PROCESAMIENTO NLP      │
-              │  Azure CLU analiza el   │
-              │  mensaje del usuario    │
+              │  Groq analiza el mensaje │
+              │  (propuesto: Azure CLU)  │
               └────────────┬────────────┘
                            │
            ┌───────────────┴───────────────┐
@@ -143,35 +169,43 @@ La solución se compone de 4 capas tecnológicas:
 
 ```
 ┌──────────────────────────────────────────────────────┐
-│          SITIO WEB INNOVVENTAS (existente)            │
-│    <script src="chatbot-widget.js"></script>          │  ← Widget embebible
+│   SITIO WEB INNOVVENTAS  ·  Widget + Dashboard         │
+│   <script src="widget.js"></script>   [Netlify]        │  ← Frontend estático
 └───────────────────────────┬──────────────────────────┘
-                            │ HTTPS / REST API
+                            │ HTTPS / REST API (CORS)
                             ▼
 ┌──────────────────────────────────────────────────────┐
-│            BACKEND FastAPI (Python)                   │  ← Lógica del bot
-│         Contenedor Docker / Puerto 8000               │
-│   • POST /api/chat  • GET /api/metrics                │
+│            BACKEND FastAPI (Python)   [Render]        │  ← Lógica del bot
+│   • POST /api/chat     • POST /api/feedback           │
+│   • GET  /api/metrics  • GET  /api/faqs               │
 └─────────────────┬────────────────┬───────────────────┘
                   │                │
                   ▼                ▼
-┌─────────────────────┐  ┌────────────────────────────┐
-│  Azure AI Language   │  │  PostgreSQL (Docker)        │
-│  CLU — Detección de  │  │  • FAQs    • chat_logs      │  ← Datos y métricas
-│  intenciones en NLP  │  │  • sessions • feedback      │
-└─────────────────────┘  └────────────────────────────┘
+┌─────────────────────────┐  ┌────────────────────────────┐
+│  MOTOR NLP                │  │  PostgreSQL                 │
+│  • Real: Groq (Llama 3.3) │  │  • Real: Neon (cloud)       │
+│  • Propuesto: Azure CLU   │  │  • Propuesto: Azure DB      │  ← Datos y métricas
+│  + 18 FAQs como contexto  │  │  faqs·chat_logs·sessions·   │
+│                           │  │  feedback                   │
+└─────────────────────────┘  └────────────────────────────┘
 ```
+
+> El motor NLP y la base de datos son **piezas intercambiables**: el código del backend
+> es el mismo para Azure CLU o Groq, y para Azure DB o Neon (todo vía variables de entorno).
 
 ## 3.2 Justificación de Cada Tecnología
 
-### Azure AI Language — Conversational Language Understanding (CLU)
-**¿Por qué?** Es el servicio de Microsoft Azure directamente relacionado con el curso AI-900T00. Permite entrenar un modelo de comprensión del lenguaje natural con utterances en español, detectar intenciones como "consulta_producto" o "rastreo_pedido", y extraer entidades como el nombre del producto o número de orden. Se integra via REST API con cualquier backend.
+### Azure AI Language — CLU *(motor NLP propuesto)*
+**¿Por qué?** Es el servicio de Microsoft Azure directamente relacionado con el curso AI-900T00. Permite entrenar un modelo de comprensión del lenguaje natural con utterances en español, detectar intenciones como "consulta_producto" o "rastreo_pedido", y extraer entidades como el nombre del producto o número de orden. Se integra via REST API con cualquier backend. *Es la opción recomendada para producción dentro del ecosistema Azure.*
+
+### Groq + Llama 3.3 *(motor NLP realmente implementado)*
+**¿Por qué?** Al no disponer de crédito Azure, se optó por un **LLM de capa gratuita** vía Groq. En lugar de entrenar intenciones manualmente, las **18 FAQs de InnovVentas se inyectan en el *system prompt*** como base de conocimiento; el modelo entiende lenguaje libre (sinónimos, typos, frases indirectas) y responde **ciñéndose a esa información**. Ventajas: cero costo, sin entrenamiento previo, mejor comprensión de frases impredecibles y respuesta en < 2 s. Es intercambiable con Azure CLU sin tocar el resto del sistema.
 
 ### Python + FastAPI
 **¿Por qué?** FastAPI es el framework Python más moderno para construir APIs REST. Su soporte nativo para operaciones asíncronas lo hace eficiente para manejar múltiples conversaciones simultáneas. Genera documentación automática (Swagger) que facilita las pruebas, y tiene una curva de aprendizaje baja para un equipo de desarrollo pequeño.
 
-### PostgreSQL en Docker
-**¿Por qué?** PostgreSQL es una base de datos relacional robusta y open source que permite almacenar los logs de conversaciones, la base de FAQs y las métricas de uso. Al ejecutarse en Docker, el ambiente de desarrollo en Windows 11 es idéntico al de producción. En el futuro, puede migrarse fácilmente a **Azure Database for PostgreSQL** sin cambios en el código.
+### PostgreSQL (Docker en local · Neon en producción)
+**¿Por qué?** PostgreSQL es una base de datos relacional robusta y open source que permite almacenar los logs de conversaciones, la base de FAQs y las métricas de uso. En desarrollo corre en **Docker** (ambiente idéntico al de producción en Windows 11); en producción se usó **Neon**, un PostgreSQL gestionado de capa gratuita en la nube. Como la conexión es por la variable `DATABASE_URL`, migrar entre Docker, Neon o **Azure Database for PostgreSQL** no requiere cambios de código.
 
 ### HTML/CSS/JS Vanilla (Widget)
 **¿Por qué?** Un widget construido sin frameworks externos (React, Vue, etc.) puede insertarse en el sitio web de InnovVentas con una sola línea de código `<script>`, sin importar la tecnología con la que fue construido el sitio (WordPress, Shopify, o custom). Es ligero y no introduce dependencias que puedan generar conflictos.
@@ -179,11 +213,19 @@ La solución se compone de 4 capas tecnológicas:
 ### Docker + Docker Compose
 **¿Por qué?** Docker garantiza que el chatbot funcione igual en el equipo del desarrollador (Windows 11 Pro) que en el servidor de producción. Con un solo comando `docker-compose up -d` se levanta toda la infraestructura: backend + base de datos.
 
+### Hosting: Render (backend) + Netlify (frontend)
+**¿Por qué?** El despliegue real usó plataformas de **capa gratuita**: **Render** ejecuta el backend FastAPI (rol equivalente a Azure Container Instances) manteniendo en secreto las claves de API; **Netlify** publica el frontend estático (widget + dashboard). Esta separación frontend/backend es un patrón estándar: el sitio estático nunca expone credenciales, que quedan resguardadas en el backend.
+
 ---
 
 # 4. PLAN DE IMPLEMENTACIÓN
 
 ## 4.1 Cronograma de Implementación (5 semanas)
+
+> **Nota:** el cronograma describe la **ruta propuesta con Azure**. En el prototipo real, la
+> **Semana 2** (entrenar el modelo CLU en Azure Language Studio) se reemplazó por una tarea más
+> corta: conectar el LLM de Groq e inyectar las FAQs como contexto — sin entrenamiento manual de
+> intenciones. El resto del cronograma (backend, frontend, integración, pruebas) se mantiene igual.
 
 ### Semana 1 — Preparación y Configuración
 1. Levantar reunión con el equipo de ventas de InnovVentas para identificar las 25 FAQs más frecuentes
@@ -242,11 +284,11 @@ La solución se compone de 4 capas tecnológicas:
 
 # 5. CONCLUSIONES
 
-La implementación de Nova, el chatbot de InnovVentas basado en **Azure AI Language**, representa una solución técnicamente sólida que ataca directamente los tres problemas identificados: falta de respuestas inmediatas, confusión en el proceso de pago y soporte post-venta lento.
+La implementación de Nova, el chatbot de InnovVentas, representa una solución técnicamente sólida que ataca directamente los tres problemas identificados: falta de respuestas inmediatas, confusión en el proceso de pago y soporte post-venta lento. La solución se planteó sobre **Azure AI Language** (alineada al curso) y se materializó como **prototipo funcional desplegado** con servicios de capa gratuita (**Groq + Neon + Render + Netlify**), demostrando una arquitectura desacoplada y migrable.
 
-La arquitectura propuesta — **FastAPI + Azure CLU + PostgreSQL + Docker** — cumple con todos los requerimientos del caso:
+La arquitectura — **FastAPI + (Azure CLU ó Groq) + PostgreSQL + Docker** — cumple con todos los requerimientos del caso:
 
-✅ Responde preguntas frecuentes de forma automática (Azure CLU + FAQs en PostgreSQL)  
+✅ Responde preguntas frecuentes de forma automática (LLM/Azure CLU + FAQs en PostgreSQL)  
 ✅ Asiste en el proceso de compra paso a paso (flujo conversacional guiado)  
 ✅ Ofrece soporte técnico básico con escalado a humano cuando es necesario  
 ✅ Se integra al sitio web existente con una sola línea de código  

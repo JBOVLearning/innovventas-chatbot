@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>InnovVentas — Dashboard de Métricas del Chatbot</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    body{font-family:system-ui,Segoe UI,Roboto,sans-serif;margin:0;background:#f1f5f9;color:#1e293b}
+    header{background:#2563eb;color:#fff;padding:24px 20px}
+    header h1{margin:0;font-size:22px}
+    header p{margin:4px 0 0;opacity:.9;font-size:14px}
+    main{max-width:960px;margin:28px auto;padding:0 20px}
+    .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:24px}
+    .kpi{background:#fff;border-radius:12px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,.06);text-align:center}
+    .kpi .val{font-size:34px;font-weight:700;color:#2563eb}
+    .kpi .lbl{font-size:13px;color:#64748b;margin-top:6px}
+    .card{background:#fff;border-radius:12px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+    .bar{display:flex;gap:12px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
+    button{background:#2563eb;color:#fff;border:none;border-radius:8px;padding:9px 16px;cursor:pointer;font-size:14px}
+    input{border:1px solid #cbd5e1;border-radius:8px;padding:8px 10px;font-size:13px;width:340px;max-width:100%}
+    #status{font-size:13px;color:#64748b}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>📊 Dashboard de Métricas — Chatbot Nova</h1>
+    <p>InnovVentas · datos en tiempo real desde <code>/api/metrics</code></p>
+  </header>
+  <main>
+    <div class="bar">
+      <label>API:</label>
+      <input id="api" />
+      <button onclick="cargar()">🔄 Actualizar</button>
+      <span id="status"></span>
+    </div>
+
+    <div class="kpis">
+      <div class="kpi"><div class="val" id="k-sessions">—</div><div class="lbl">Sesiones totales</div></div>
+      <div class="kpi"><div class="val" id="k-msgs">—</div><div class="lbl">Mensajes de usuarios</div></div>
+      <div class="kpi"><div class="val" id="k-csat">—</div><div class="lbl">CSAT promedio (1-5)</div></div>
+      <div class="kpi"><div class="val" id="k-fallback">—</div><div class="lbl">% Fallback (no entendidos)</div></div>
+    </div>
+
+    <div class="card">
+      <h3>Top 10 intenciones más consultadas</h3>
+      <canvas id="chart" height="120"></canvas>
+    </div>
+  </main>
+
+  <script>
+    // Misma URL que el widget. Cámbiala por la de tu backend en Render si difiere.
+    const DEFAULT_API = window.NOVA_API_URL || "https://innovventas-chatbot-rz1k.onrender.com";
+    document.getElementById("api").value = DEFAULT_API;
+    let chart = null;
+
+    async function cargar() {
+      const base = document.getElementById("api").value.replace(/\/$/, "");
+      const st = document.getElementById("status");
+      st.textContent = "Cargando...";
+      try {
+        const r = await fetch(base + "/api/metrics");
+        const m = await r.json();
+        document.getElementById("k-sessions").textContent = m.total_sessions ?? 0;
+        document.getElementById("k-msgs").textContent = m.total_user_messages ?? 0;
+        document.getElementById("k-csat").textContent = m.csat_avg ?? "—";
+        document.getElementById("k-fallback").textContent = (m.fallback_rate_pct ?? 0) + "%";
+
+        const labels = (m.top_intents || []).map(i => i.intent);
+        const data = (m.top_intents || []).map(i => i.total);
+        if (chart) chart.destroy();
+        chart = new Chart(document.getElementById("chart"), {
+          type: "bar",
+          data: { labels, datasets: [{ label: "Consultas", data, backgroundColor: "#2563eb" }] },
+          options: { indexAxis: "y", plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+        });
+        st.textContent = "Actualizado " + new Date().toLocaleTimeString();
+      } catch (e) {
+        st.textContent = "⚠️ No se pudo conectar con la API.";
+      }
+    }
+    cargar();
+  </script>
+</body>
+</html>
