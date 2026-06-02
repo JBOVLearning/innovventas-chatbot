@@ -47,44 +47,55 @@
 
   // ---------- Estilos ----------
   const css = `
-  #nova-fab{position:fixed;bottom:24px;right:24px;width:56px;height:56px;border-radius:50%;
-    background:linear-gradient(135deg,#0057FF,#00C2FF);color:#fff;border:none;cursor:pointer;font-size:24px;
-    box-shadow:0 4px 20px rgba(0,87,255,.5);z-index:99999;transition:transform .18s,box-shadow .18s}
-  #nova-fab:hover{transform:scale(1.1);box-shadow:0 6px 26px rgba(0,87,255,.7)}
-  #nova-fab::after{content:"";position:absolute;top:10px;right:10px;width:11px;height:11px;border-radius:50%;
-    background:#FF4D4D;border:2px solid #0A0F1E;animation:nova-pulse 1.6s infinite}
-  @keyframes nova-pulse{0%{box-shadow:0 0 0 0 rgba(255,77,77,.6)}70%{box-shadow:0 0 0 8px rgba(255,77,77,0)}100%{box-shadow:0 0 0 0 rgba(255,77,77,0)}}
-  #nova-box{position:fixed;bottom:88px;right:24px;width:340px;max-width:92vw;height:480px;max-height:78vh;
-    background:#111827;border:1px solid #1E2D40;border-radius:16px;box-shadow:0 24px 64px rgba(0,0,0,.5);
+  #nova-fab{position:fixed;bottom:24px;right:24px;width:62px;height:62px;border-radius:50%;
+    background:linear-gradient(135deg,#0057FF,#00C2FF);color:#fff;border:none;cursor:pointer;
+    display:grid;place-items:center;box-shadow:0 10px 30px rgba(0,87,255,.5);z-index:99999;
+    transition:transform .2s cubic-bezier(.34,1.56,.64,1),box-shadow .2s}
+  #nova-fab svg{width:27px;height:27px}
+  #nova-fab:hover{transform:scale(1.08) rotate(-4deg);box-shadow:0 14px 38px rgba(0,87,255,.7)}
+  #nova-fab:active{transform:scale(.95)}
+  #nova-fab::after{content:"";position:absolute;top:9px;right:9px;width:13px;height:13px;border-radius:50%;
+    background:#FF4D4D;border:2.5px solid #0A0F1E;animation:nova-pulse 1.8s infinite}
+  @keyframes nova-pulse{0%{box-shadow:0 0 0 0 rgba(255,77,77,.6)}70%{box-shadow:0 0 0 9px rgba(255,77,77,0)}100%{box-shadow:0 0 0 0 rgba(255,77,77,0)}}
+  #nova-box{position:fixed;bottom:96px;right:24px;width:374px;max-width:92vw;height:548px;max-height:80vh;
+    background:#0F1526;border:1px solid #20304a;border-radius:20px;box-shadow:0 30px 80px rgba(0,0,0,.6);
     display:flex;flex-direction:column;overflow:hidden;font-family:'DM Sans',system-ui,Segoe UI,Roboto,sans-serif;z-index:99999;
-    opacity:0;visibility:hidden;transform:scale(.8) translateY(20px);transition:opacity .2s ease-out,transform .2s ease-out,visibility .2s}
+    opacity:0;visibility:hidden;transform:scale(.9) translateY(24px);transform-origin:bottom right;
+    transition:opacity .25s ease,transform .28s cubic-bezier(.34,1.4,.5,1),visibility .25s}
   #nova-box.open{opacity:1;visibility:visible;transform:scale(1) translateY(0)}
-  #nova-head{background:linear-gradient(135deg,#0057FF,#00C2FF);color:#fff;height:56px;padding:0 14px;display:flex;justify-content:space-between;align-items:center}
-  #nova-head .who{display:flex;align-items:center;gap:10px;font-weight:600;font-size:15px}
-  #nova-head .avatar{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.2);display:grid;place-items:center;font-weight:700;font-family:'Syne',sans-serif}
-  #nova-head .who small{display:flex;align-items:center;gap:5px;font-weight:400;opacity:.92;font-size:11px}
-  #nova-head .online{width:7px;height:7px;border-radius:50%;background:#00D97E;display:inline-block;animation:nova-pulse2 1.8s infinite}
-  @keyframes nova-pulse2{0%{box-shadow:0 0 0 0 rgba(0,217,126,.6)}70%{box-shadow:0 0 0 6px rgba(0,217,126,0)}100%{box-shadow:0 0 0 0 rgba(0,217,126,0)}}
-  #nova-head .acts{display:flex;gap:12px;align-items:center}
-  #nova-head .acts span{cursor:pointer;opacity:.9;font-size:15px}
-  #nova-head .acts span:hover{opacity:1}
-  #nova-msgs{flex:1;overflow-y:auto;padding:16px;background:#0A0F1E;display:flex;flex-direction:column;gap:9px}
-  .nova-msg{max-width:82%;padding:9px 13px;font-size:14px;line-height:1.45;white-space:pre-wrap;word-wrap:break-word}
-  .nova-user{align-self:flex-end;background:#0057FF;color:#fff;border-radius:12px 12px 2px 12px}
-  .nova-bot{align-self:flex-start;background:#1C2333;color:#F0F4FF;border-radius:12px 12px 12px 2px}
-  .nova-typing{align-self:flex-start;background:#1C2333;border-radius:12px 12px 12px 2px;padding:11px 14px;display:flex;gap:4px}
-  .nova-typing span{width:7px;height:7px;border-radius:50%;background:#8899BB;animation:nova-bounce 1.2s infinite}
+  #nova-head{position:relative;background:linear-gradient(135deg,#0057FF,#00C2FF);color:#fff;padding:15px 16px;display:flex;justify-content:space-between;align-items:center;overflow:hidden}
+  #nova-head::before{content:"";position:absolute;inset:0;background:radial-gradient(140px 90px at 88% -25%,rgba(255,255,255,.28),transparent 70%)}
+  #nova-head>*{position:relative}
+  #nova-head .who{display:flex;align-items:center;gap:11px;font-weight:700;font-size:15px;font-family:'Syne',sans-serif}
+  #nova-head .avatar{position:relative;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.22);backdrop-filter:blur(4px);display:grid;place-items:center;font-weight:800;font-family:'Syne',sans-serif;font-size:16px;border:1px solid rgba(255,255,255,.3)}
+  #nova-head .who small{display:flex;align-items:center;gap:6px;font-weight:500;opacity:.95;font-size:11.5px;font-family:'DM Sans',sans-serif;margin-top:2px}
+  #nova-head .online{width:8px;height:8px;border-radius:50%;background:#26ED9E;display:inline-block;box-shadow:0 0 8px #26ED9E;animation:nova-pulse2 1.8s infinite}
+  @keyframes nova-pulse2{0%{box-shadow:0 0 0 0 rgba(38,237,158,.6)}70%{box-shadow:0 0 0 7px rgba(38,237,158,0)}100%{box-shadow:0 0 0 0 rgba(38,237,158,0)}}
+  #nova-head .acts{display:flex;gap:6px;align-items:center}
+  #nova-head .acts span{cursor:pointer;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-size:15px;transition:background .15s}
+  #nova-head .acts span:hover{background:rgba(255,255,255,.2)}
+  #nova-msgs{flex:1;overflow-y:auto;padding:18px 16px;background:#0A0F1E;display:flex;flex-direction:column;gap:11px}
+  #nova-msgs::-webkit-scrollbar{width:7px}
+  #nova-msgs::-webkit-scrollbar-thumb{background:#243453;border-radius:6px}
+  .nova-msg{max-width:84%;padding:10px 14px;font-size:14px;line-height:1.5;white-space:pre-wrap;word-wrap:break-word;animation:nova-in .28s ease}
+  @keyframes nova-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  .nova-user{align-self:flex-end;background:linear-gradient(135deg,#0057FF,#0A74FF);color:#fff;border-radius:16px 16px 4px 16px;box-shadow:0 4px 14px rgba(0,87,255,.3)}
+  .nova-bot{align-self:flex-start;background:#19223A;color:#EAF1FF;border:1px solid #243453;border-radius:16px 16px 16px 4px}
+  .nova-typing{align-self:flex-start;background:#19223A;border:1px solid #243453;border-radius:16px 16px 16px 4px;padding:13px 16px;display:flex;gap:5px}
+  .nova-typing span{width:7px;height:7px;border-radius:50%;background:#7E93BC;animation:nova-bounce 1.2s infinite}
   .nova-typing span:nth-child(2){animation-delay:.2s}
   .nova-typing span:nth-child(3){animation-delay:.4s}
-  @keyframes nova-bounce{0%,60%,100%{transform:translateY(0);opacity:.5}30%{transform:translateY(-5px);opacity:1}}
-  #nova-foot{display:flex;align-items:center;border-top:1px solid #1E2D40;padding:10px;gap:8px;background:#111827}
-  #nova-input{flex:1;border:1px solid #1E2D40;background:#1C2333;color:#F0F4FF;border-radius:24px;padding:10px 16px;font-size:14px;outline:none}
-  #nova-input::placeholder{color:#8899BB}
-  #nova-input:focus{border-color:#0057FF}
-  #nova-send{background:#0057FF;color:#fff;border:none;border-radius:50%;width:40px;height:40px;cursor:pointer;font-size:15px;flex:0 0 auto}
-  #nova-send:hover{background:#0046cc}
-  #nova-csat{padding:11px 14px;text-align:center;border-top:1px solid #1E2D40;background:#111827;font-size:13px;color:#F0F4FF}
-  #nova-csat button{font-size:20px;background:none;border:none;cursor:pointer}
+  @keyframes nova-bounce{0%,60%,100%{transform:translateY(0);opacity:.5}30%{transform:translateY(-6px);opacity:1}}
+  #nova-foot{display:flex;align-items:center;border-top:1px solid #20304a;padding:11px 12px;gap:9px;background:#0F1526}
+  #nova-input{flex:1;border:1px solid #243453;background:#19223A;color:#EAF1FF;border-radius:24px;padding:11px 16px;font-size:14px;outline:none;transition:border .15s,box-shadow .15s}
+  #nova-input::placeholder{color:#7E93BC}
+  #nova-input:focus{border-color:#0057FF;box-shadow:0 0 0 3px rgba(0,87,255,.18)}
+  #nova-send{background:linear-gradient(135deg,#0057FF,#00C2FF);color:#fff;border:none;border-radius:50%;width:42px;height:42px;cursor:pointer;font-size:16px;flex:0 0 auto;display:grid;place-items:center;transition:transform .15s,filter .15s}
+  #nova-send:hover{filter:brightness(1.1);transform:scale(1.05)}
+  #nova-send:active{transform:scale(.94)}
+  #nova-csat{padding:12px 14px;text-align:center;border-top:1px solid #20304a;background:#0F1526;font-size:13px;color:#EAF1FF}
+  #nova-csat button{font-size:22px;background:none;border:none;cursor:pointer;transition:transform .12s;filter:grayscale(.15)}
+  #nova-csat button:hover{transform:scale(1.25);filter:grayscale(0)}
   `;
   const style = document.createElement("style");
   style.textContent = css;
@@ -93,7 +104,8 @@
   // ---------- DOM ----------
   const fab = document.createElement("button");
   fab.id = "nova-fab";
-  fab.textContent = "💬";
+  fab.title = "Chatea con Nova";
+  fab.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>';
   document.body.appendChild(fab);
 
   const box = document.createElement("div");

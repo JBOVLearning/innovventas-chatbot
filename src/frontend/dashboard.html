@@ -8,156 +8,197 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <style>
-    :root{
-      --brand-primary:#0057FF; --brand-secondary:#00C2FF; --brand-dark:#0A0F1E;
-      --brand-surface:#111827; --brand-surface-2:#1C2333; --brand-border:#1E2D40;
-      --brand-text:#F0F4FF; --brand-muted:#8899BB; --brand-accent:#FF6B2B;
-      --brand-success:#00D97E; --brand-error:#FF4D4D;
-      --gradient-card:linear-gradient(145deg,#111827 0%,#1C2333 100%);
+
+  <!-- Tailwind CSS (CDN, sin build) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: '#0057FF', brand2: '#00C2FF', ink: '#0A0F1E', surface: '#111827',
+            surface2: '#1C2333', line: '#1E2D40', fg: '#F0F4FF', muted: '#8899BB',
+            accent: '#FF6B2B', success: '#00D97E', danger: '#FF4D4D'
+          },
+          fontFamily: { display: ['Syne', 'sans-serif'], body: ['"DM Sans"', 'system-ui', 'sans-serif'] }
+        }
+      }
     }
-    *{box-sizing:border-box}
-    body{margin:0;background:var(--brand-dark);color:var(--brand-text);font-family:'DM Sans',system-ui,sans-serif}
-    a{color:inherit;text-decoration:none}
-    h1,h2,h3,.display{font-family:'Syne',sans-serif}
-    .wrap{max-width:1200px;margin:0 auto;padding:0 24px}
-    .num{font-variant-numeric:tabular-nums}
-    button{font-family:inherit;cursor:pointer}
-    .tag-demo{font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:var(--brand-accent);border:1px solid var(--brand-accent);border-radius:5px;padding:2px 7px;font-weight:600}
+  </script>
 
-    /* Navbar admin */
-    .nav{background:var(--brand-dark);border-bottom:1px solid var(--brand-border)}
-    .nav .wrap{display:flex;align-items:center;gap:16px;height:62px}
-    .logo{display:flex;align-items:center;gap:9px;font-family:'Syne';font-weight:800;font-size:20px}
-    .logo .mark{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#0057FF,#00C2FF);display:grid;place-items:center;font-size:15px}
-    .logo b{color:var(--brand-primary)}
-    .pill-admin{background:rgba(255,107,43,.15);color:var(--brand-accent);border:1px solid var(--brand-accent);font-size:11px;font-weight:600;letter-spacing:.5px;padding:4px 10px;border-radius:20px}
-    .nav-right{margin-left:auto;display:flex;align-items:center;gap:18px;font-size:14px;color:var(--brand-muted)}
-    .nav-right a:hover{color:var(--brand-secondary)}
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 
-    /* Header + filtros */
-    .head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin:26px 0 8px}
-    .head h1{margin:0;font-size:26px}
-    .head p{margin:6px 0 0;color:var(--brand-muted);font-size:14px}
-    .segment{display:flex;background:var(--brand-surface);border:1px solid var(--brand-border);border-radius:10px;padding:4px;gap:2px}
-    .segment button{background:none;border:0;color:var(--brand-muted);padding:7px 14px;border-radius:7px;font-size:13px;font-weight:600}
-    .segment button.active{background:var(--brand-primary);color:#fff}
-    .toolbar{display:flex;align-items:center;gap:14px;margin:14px 0 22px;flex-wrap:wrap}
-    .btn{background:var(--brand-primary);color:#fff;border:0;border-radius:9px;padding:9px 16px;font-size:14px;font-weight:600}
-    .btn:hover{background:#0046cc}
-    #status{font-size:13px;color:var(--brand-muted)}
-    .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--brand-success);margin-right:6px;vertical-align:middle}
-    details{font-size:13px;color:var(--brand-muted);margin-left:auto}
-    details input{border:1px solid var(--brand-border);background:var(--brand-surface-2);color:var(--brand-text);border-radius:7px;padding:7px 10px;font-size:13px;width:360px;max-width:100%;margin-top:6px}
+  <style>
+    /* El JS genera HTML con var(--brand-error); se conserva */
+    :root { --brand-error: #FF4D4D; --brand-success: #00D97E; --brand-secondary: #00C2FF; }
+    body {
+      background: radial-gradient(1000px 480px at 85% -10%, rgba(0,87,255,.16), transparent 60%), #0A0F1E;
+    }
+    .num { font-variant-numeric: tabular-nums; }
+    .glass { background: rgba(17,24,39,.6); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
 
-    /* KPIs */
-    .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:20px}
-    @media(max-width:860px){.kpis{grid-template-columns:1fr 1fr}}
-    .kpi{background:var(--gradient-card);border:1px solid var(--brand-border);border-radius:14px;padding:20px;position:relative}
-    .kpi .ico{font-size:24px}
-    .kpi .lbl{font-size:11px;letter-spacing:.5px;text-transform:uppercase;color:var(--brand-muted);margin:10px 0 4px}
-    .kpi .val{font-family:'Syne';font-weight:700;font-size:34px;line-height:1}
-    .kpi .sub{font-size:12px;margin-top:7px;color:var(--brand-muted)}
+    /* Tablas (las filas las inyecta el JS, por eso el estilo va aquí) */
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead th { text-align: left; color: #8899BB; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: .4px; padding: 11px 12px; background: #161f30; border-bottom: 1px solid #1E2D40; }
+    thead th:first-child { border-top-left-radius: 10px; }
+    thead th:last-child { border-top-right-radius: 10px; }
+    tbody td { padding: 12px; border-bottom: 1px solid #1E2D40; color: #F0F4FF; }
+    tbody tr:last-child td { border-bottom: 0; }
+    tbody tr { transition: background .15s; }
+    tbody tr:hover { background: #1C2333; }
+    .bar { height: 7px; border-radius: 5px; background: #1E2D40; overflow: hidden; min-width: 90px; }
+    .bar i { display: block; height: 100%; border-radius: 5px; }
+    .badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; }
+    .b-ok { background: rgba(0,217,126,.15); color: #00D97E; }
+    .b-esc { background: rgba(255,107,43,.15); color: #FF6B2B; }
+    .b-act { background: rgba(0,87,255,.18); color: #00C2FF; }
+    .up { color: #00D97E; font-weight: 700; } .down { color: #FF4D4D; font-weight: 700; } .flat { color: #8899BB; font-weight: 700; }
+    code { color: #00C2FF; font-family: ui-monospace, "Cascadia Code", monospace; font-size: 12px; }
+    .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #00D97E; margin-right: 6px; vertical-align: middle; box-shadow: 0 0 8px rgba(0,217,126,.7); }
+    .tag-demo { font-size: 10px; letter-spacing: .5px; text-transform: uppercase; color: #FF6B2B; border: 1px solid rgba(255,107,43,.5); border-radius: 6px; padding: 2px 8px; font-weight: 600; }
 
-    /* Charts */
-    .charts{display:grid;grid-template-columns:1.55fr 1fr;gap:18px;margin-bottom:20px}
-    @media(max-width:860px){.charts{grid-template-columns:1fr}}
-    .card{background:var(--gradient-card);border:1px solid var(--brand-border);border-radius:14px;padding:22px}
-    .card .ct{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:10px}
-    .card h3{margin:0;font-size:17px}
-    .card .hint{font-size:12px;color:var(--brand-muted);margin:0}
+    /* Selector de período (el JS togglea .active) */
+    .segment { display: flex; background: #111827; border: 1px solid #1E2D40; border-radius: 12px; padding: 4px; gap: 2px; }
+    .segment button { background: none; border: 0; color: #8899BB; padding: 8px 15px; border-radius: 9px; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; transition: .15s; }
+    .segment button:hover { color: #F0F4FF; }
+    .segment button.active { background: linear-gradient(135deg, #0057FF, #00C2FF); color: #fff; }
 
-    /* Tablas */
-    .grid2{display:grid;grid-template-columns:1fr 1.25fr;gap:18px}
-    @media(max-width:980px){.grid2{grid-template-columns:1fr}}
-    table{width:100%;border-collapse:collapse;font-size:13px}
-    th{text-align:left;color:var(--brand-muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.4px;padding:10px 10px;background:var(--brand-surface-2);border-bottom:1px solid var(--brand-border)}
-    td{padding:11px 10px;border-bottom:1px solid var(--brand-border)}
-    tbody tr:hover{background:var(--brand-surface-2)}
-    .bar{height:6px;border-radius:4px;background:var(--brand-border);overflow:hidden;min-width:80px}
-    .bar i{display:block;height:100%;border-radius:4px}
-    .badge{font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px}
-    .b-ok{background:rgba(0,217,126,.15);color:var(--brand-success)}
-    .b-esc{background:rgba(255,107,43,.15);color:var(--brand-accent)}
-    .b-act{background:rgba(0,87,255,.15);color:var(--brand-secondary)}
-    .up{color:var(--brand-success)}.down{color:var(--brand-error)}.flat{color:var(--brand-muted)}
-    .empty{color:var(--brand-muted);font-size:14px;text-align:center;padding:26px 0}
-    footer{text-align:center;color:var(--brand-muted);font-size:13px;padding:34px 0}
-    code{color:var(--brand-secondary)}
+    details summary { list-style: none; cursor: pointer; }
+    details summary::-webkit-details-marker { display: none; }
+    #api { border: 1px solid #1E2D40; background: #1C2333; color: #F0F4FF; border-radius: 9px; padding: 9px 12px; font-size: 13px; width: 360px; max-width: 100%; margin-top: 8px; outline: none; }
+    #api:focus { border-color: #0057FF; }
+
+    ::-webkit-scrollbar { width: 11px; height: 11px; }
+    ::-webkit-scrollbar-track { background: #0A0F1E; }
+    ::-webkit-scrollbar-thumb { background: #1E2D40; border-radius: 8px; border: 2px solid #0A0F1E; }
   </style>
 </head>
-<body>
+<body class="bg-ink text-fg font-body antialiased">
 
-  <nav class="nav">
-    <div class="wrap">
-      <a href="index.html" class="logo"><span class="mark">⚡</span>Innov<b>Ventas</b></a>
-      <span class="pill-admin">ADMIN PANEL</span>
-      <div class="nav-right">
-        <a href="index.html">← Volver a la tienda</a>
-        <span>Panel de Métricas — Nova</span>
+  <!-- ===== Navbar admin ===== -->
+  <nav class="border-b border-line/60 glass sticky top-0 z-40">
+    <div class="max-w-[1240px] mx-auto px-5 h-16 flex items-center gap-4">
+      <a href="index.html" class="flex items-center gap-2.5 font-display font-extrabold text-xl">
+        <span class="grid place-items-center w-9 h-9 rounded-xl bg-gradient-to-br from-brand to-brand2 text-base">⚡</span>
+        Innov<span class="text-brand2">Ventas</span>
+      </a>
+      <span class="text-[11px] font-semibold tracking-wide text-accent bg-accent/15 border border-accent/40 rounded-full px-3 py-1">ADMIN PANEL</span>
+      <div class="ml-auto flex items-center gap-5 text-sm text-muted">
+        <a href="index.html" class="hover:text-brand2 transition">← Volver a la tienda</a>
+        <span class="hidden sm:inline">Panel de Métricas — Nova</span>
       </div>
     </div>
   </nav>
 
-  <div class="wrap">
-    <div class="head">
+  <div class="max-w-[1240px] mx-auto px-5">
+
+    <!-- Encabezado + filtros -->
+    <div class="flex flex-wrap justify-between items-end gap-4 mt-8 mb-1">
       <div>
-        <h1>📊 Dashboard de Métricas</h1>
-        <p id="subtitle">Desempeño del asistente Nova · cargando…</p>
+        <h1 class="font-display font-extrabold text-3xl md:text-4xl flex items-center gap-3">
+          <span class="inline-block w-1.5 h-8 rounded-full bg-gradient-to-b from-brand to-brand2"></span>Dashboard de Métricas
+        </h1>
+        <p id="subtitle" class="text-muted text-sm mt-2">Desempeño del asistente Nova · cargando…</p>
       </div>
       <div class="segment" title="Demo: el dashboard muestra datos acumulados">
         <button>Hoy</button><button class="active">7 días</button><button>30 días</button><button>Personalizado</button>
       </div>
     </div>
 
-    <div class="toolbar">
-      <button class="btn" onclick="cargar()">🔄 Actualizar</button>
-      <span id="status"></span>
-      <details>
-        <summary style="cursor:pointer">⚙ Configurar fuente de datos</summary>
+    <!-- Toolbar -->
+    <div class="flex flex-wrap items-center gap-4 mt-5 mb-7">
+      <button onclick="cargar()"
+        class="inline-flex items-center gap-2 font-semibold text-sm px-4 py-2.5 rounded-xl bg-gradient-to-r from-brand to-brand2 text-white hover:brightness-110 transition shadow-[0_0_24px_rgba(0,87,255,.3)]">🔄 Actualizar</button>
+      <span id="status" class="text-sm text-muted"></span>
+      <details class="ml-auto text-sm text-muted">
+        <summary class="hover:text-brand2 transition">⚙ Configurar fuente de datos</summary>
         <input id="api" />
       </details>
     </div>
 
     <!-- KPIs (reales desde /api/metrics) -->
-    <div class="kpis">
-      <div class="kpi"><div class="ico">💬</div><div class="lbl">Total Conversaciones</div><div class="val num" id="k-sessions">—</div><div class="sub">Sesiones registradas</div></div>
-      <div class="kpi"><div class="ico">✅</div><div class="lbl">Tasa de Comprensión</div><div class="val num" id="k-compr" style="color:var(--brand-success)">—</div><div class="sub" id="k-fallback">&nbsp;</div></div>
-      <div class="kpi"><div class="ico">⭐</div><div class="lbl">CSAT Promedio</div><div class="val num" id="k-csat" style="color:#FFD700">—</div><div class="sub" id="k-csat-stars">&nbsp;</div></div>
-      <div class="kpi"><div class="ico">📨</div><div class="lbl">Mensajes de Usuarios</div><div class="val num" id="k-msgs" style="color:var(--brand-secondary)">—</div><div class="sub">Total acumulado</div></div>
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 mb-6">
+      <div data-kpi class="relative bg-gradient-to-b from-surface to-surface2/60 border border-line rounded-2xl p-5 overflow-hidden">
+        <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-brand to-brand2"></div>
+        <span class="grid place-items-center w-11 h-11 rounded-xl bg-brand/15 text-xl">💬</span>
+        <div class="text-[11px] uppercase tracking-wide text-muted mt-4">Total Conversaciones</div>
+        <div id="k-sessions" class="num font-display font-extrabold text-4xl mt-1 leading-none text-fg">—</div>
+        <div class="text-xs text-muted mt-2">Sesiones registradas</div>
+      </div>
+      <div data-kpi class="relative bg-gradient-to-b from-surface to-surface2/60 border border-line rounded-2xl p-5 overflow-hidden">
+        <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-success to-brand2"></div>
+        <span class="grid place-items-center w-11 h-11 rounded-xl bg-success/15 text-xl">✅</span>
+        <div class="text-[11px] uppercase tracking-wide text-muted mt-4">Tasa de Comprensión</div>
+        <div id="k-compr" class="num font-display font-extrabold text-4xl mt-1 leading-none text-success">—</div>
+        <div id="k-fallback" class="text-xs text-muted mt-2">&nbsp;</div>
+      </div>
+      <div data-kpi class="relative bg-gradient-to-b from-surface to-surface2/60 border border-line rounded-2xl p-5 overflow-hidden">
+        <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#FFD700] to-accent"></div>
+        <span class="grid place-items-center w-11 h-11 rounded-xl bg-[#FFD700]/15 text-xl">⭐</span>
+        <div class="text-[11px] uppercase tracking-wide text-muted mt-4">CSAT Promedio</div>
+        <div id="k-csat" class="num font-display font-extrabold text-4xl mt-1 leading-none text-[#FFD700]">—</div>
+        <div id="k-csat-stars" class="text-xs text-muted mt-2">&nbsp;</div>
+      </div>
+      <div data-kpi class="relative bg-gradient-to-b from-surface to-surface2/60 border border-line rounded-2xl p-5 overflow-hidden">
+        <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-brand2 to-brand"></div>
+        <span class="grid place-items-center w-11 h-11 rounded-xl bg-brand2/15 text-xl">📨</span>
+        <div class="text-[11px] uppercase tracking-wide text-muted mt-4">Mensajes de Usuarios</div>
+        <div id="k-msgs" class="num font-display font-extrabold text-4xl mt-1 leading-none text-brand2">—</div>
+        <div class="text-xs text-muted mt-2">Total acumulado</div>
+      </div>
     </div>
 
     <!-- Gráficos -->
-    <div class="charts">
-      <div class="card">
-        <div class="ct"><h3>Conversaciones por día</h3><span class="tag-demo">datos de ejemplo</span></div>
+    <div class="grid lg:grid-cols-[1.5fr_1fr] gap-5 mb-6">
+      <div data-card class="bg-gradient-to-b from-surface to-surface2/40 border border-line rounded-2xl p-5">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-display font-bold text-lg">Conversaciones por día</h3>
+          <span class="tag-demo">datos de ejemplo</span>
+        </div>
         <canvas id="line" height="200"></canvas>
       </div>
-      <div class="card">
-        <div class="ct"><h3>Top Intenciones</h3><span class="hint">en vivo</span></div>
+      <div data-card class="bg-gradient-to-b from-surface to-surface2/40 border border-line rounded-2xl p-5">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-display font-bold text-lg">Top Intenciones</h3>
+          <span class="inline-flex items-center gap-1.5 text-[11px] text-success font-semibold"><span class="w-1.5 h-1.5 rounded-full bg-success animate-pulse"></span>en vivo</span>
+        </div>
         <canvas id="donut" height="200"></canvas>
       </div>
     </div>
 
     <!-- Tablas -->
-    <div class="grid2">
-      <div class="card">
-        <div class="ct"><h3>🎯 Intenciones más consultadas</h3><span class="hint">en vivo</span></div>
-        <div id="intents-empty" class="empty" style="display:none">Aún no hay consultas registradas.</div>
-        <table id="intents-table"><thead>
-          <tr><th>Intención</th><th>Consultas</th><th>% del total</th><th>Tend.</th></tr>
-        </thead><tbody></tbody></table>
+    <div class="grid lg:grid-cols-[1fr_1.25fr] gap-5">
+      <div data-card class="bg-gradient-to-b from-surface to-surface2/40 border border-line rounded-2xl p-5">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="font-display font-bold text-lg">🎯 Intenciones más consultadas</h3>
+          <span class="inline-flex items-center gap-1.5 text-[11px] text-success font-semibold"><span class="w-1.5 h-1.5 rounded-full bg-success animate-pulse"></span>en vivo</span>
+        </div>
+        <div id="intents-empty" class="text-muted text-sm text-center py-7" style="display:none">Aún no hay consultas registradas.</div>
+        <div class="overflow-x-auto">
+          <table id="intents-table"><thead>
+            <tr><th>Intención</th><th>Consultas</th><th>% del total</th><th>Tend.</th></tr>
+          </thead><tbody></tbody></table>
+        </div>
       </div>
-      <div class="card">
-        <div class="ct"><h3>🕐 Últimas conversaciones</h3><span class="tag-demo">datos de ejemplo</span></div>
-        <table><thead>
-          <tr><th>Sesión</th><th>Hora</th><th>Intención final</th><th>Msj</th><th>Estado</th><th>CSAT</th></tr>
-        </thead><tbody id="recent"></tbody></table>
+      <div data-card class="bg-gradient-to-b from-surface to-surface2/40 border border-line rounded-2xl p-5">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="font-display font-bold text-lg">🕐 Últimas conversaciones</h3>
+          <span class="tag-demo">datos de ejemplo</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table><thead>
+            <tr><th>Sesión</th><th>Hora</th><th>Intención final</th><th>Msj</th><th>Estado</th><th>CSAT</th></tr>
+          </thead><tbody id="recent"></tbody></table>
+        </div>
       </div>
     </div>
   </div>
 
-  <footer>InnovVentas · KPIs y top intenciones en vivo desde <code>/api/metrics</code> · series temporales y conversaciones recientes son datos de ejemplo (el API académico no expone histórico) · AI-900T00 (SENATI)</footer>
+  <footer class="text-center text-muted text-xs px-5 py-10 mt-4 max-w-[1000px] mx-auto leading-relaxed">
+    InnovVentas · KPIs y top intenciones en vivo desde <code>/api/metrics</code> · series temporales y conversaciones recientes son datos de ejemplo (el API académico no expone histórico) · AI-900T00 (SENATI)
+  </footer>
 
   <script>
     const DEFAULT_API = window.NOVA_API_URL || "https://innovventas-chatbot-rz1k.onrender.com";
@@ -267,6 +308,45 @@
     renderSample();
     cargar();
     setInterval(cargar, 60000);
+  </script>
+
+  <!-- Mejora visual (GSAP): reveal de tarjetas + count-up de KPIs. No altera la lógica de datos. -->
+  <script>
+    (function () {
+      if (!window.gsap) return;
+      if (window.ScrollTrigger) gsap.registerPlugin(ScrollTrigger);
+
+      gsap.from("[data-kpi]", { y: 22, opacity: 0, duration: .6, ease: "power2.out", stagger: .08 });
+      if (window.ScrollTrigger) {
+        gsap.utils.toArray("[data-card]").forEach(el =>
+          gsap.from(el, { scrollTrigger: { trigger: el, start: "top 90%" }, y: 26, opacity: 0, duration: .6, ease: "power2.out" }));
+      }
+
+      // Count-up: anima la primera vez que cada KPI numérico recibe valor desde la API.
+      function countUp(id, decimals) {
+        const el = document.getElementById(id); if (!el) return;
+        let busy = false, done = false;
+        const obs = new MutationObserver(() => {
+          if (busy || done) return;
+          const raw = el.textContent.trim();
+          const mm = raw.match(/^(-?[\d.,]+)/); if (!mm) return;
+          const target = parseFloat(mm[1].replace(/,/g, "")); if (isNaN(target)) return;
+          const suffix = raw.slice(mm[1].length);
+          busy = true;
+          const o = { v: 0 };
+          gsap.to(o, {
+            v: target, duration: 1.1, ease: "power2.out",
+            onUpdate() { el.textContent = (decimals != null ? o.v.toFixed(decimals) : Math.round(o.v).toLocaleString("es-PE")) + suffix; },
+            onComplete() { el.textContent = raw; busy = false; done = true; obs.disconnect(); }
+          });
+        });
+        obs.observe(el, { childList: true, characterData: true, subtree: true });
+      }
+      countUp("k-sessions", null);
+      countUp("k-msgs", null);
+      countUp("k-compr", 1);
+      countUp("k-csat", 2);
+    })();
   </script>
 </body>
 </html>
