@@ -36,9 +36,30 @@
     }
   </script>
 
+  <!-- Sistema de componentes estilo shadcn/Material (Play CDN soporta @layer/@apply) -->
+  <style type="text/tailwindcss">
+    @layer components {
+      .btn { @apply inline-flex items-center justify-center gap-2 rounded-lg text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/60 focus-visible:ring-offset-2 focus-visible:ring-offset-ink disabled:opacity-50 disabled:pointer-events-none; }
+      .btn-md { @apply h-10 px-4; }
+      .btn-sm { @apply h-9 px-3 text-[13px]; }
+      .btn-icon { @apply h-10 w-10 p-0; }
+      .btn-primary { @apply bg-gradient-to-r from-brand to-brand2 text-white shadow-glow hover:brightness-110; }
+      .btn-secondary { @apply bg-surface2/70 border border-line text-fg hover:border-brand2 hover:text-brand2; }
+      .btn-outline { @apply border border-line bg-transparent text-fg hover:border-brand2 hover:text-brand2; }
+      .btn-ghost { @apply bg-transparent text-muted hover:bg-surface2/70 hover:text-fg; }
+      .input { @apply h-10 w-full rounded-lg border border-line bg-surface2/70 px-3 text-sm text-fg outline-none placeholder:text-muted transition focus-visible:border-brand focus-visible:ring-2 focus-visible:ring-brand/30; }
+      .card { @apply rounded-lg border border-line bg-gradient-to-b from-surface to-surface2/60; }
+      .chip { @apply inline-flex items-center gap-2 text-sm font-medium whitespace-nowrap rounded-lg border border-line bg-surface2/60 px-4 py-2.5 text-muted transition cursor-pointer hover:border-brand2 hover:text-brand2 hover:-translate-y-0.5; }
+      .chip-active { @apply border-brand2 bg-brand/15 text-brand2; }
+      .qbtn { @apply grid place-items-center w-6 h-6 rounded-md border border-line text-muted transition hover:border-brand2 hover:text-brand2; }
+    }
+  </style>
+
   <!-- GSAP -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <!-- Lucide icons -->
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
 
   <style>
     html { scroll-behavior: smooth; }
@@ -55,20 +76,15 @@
       -webkit-background-clip: text; background-clip: text; color: transparent;
     }
     .glass { background: rgba(17,24,39,.55); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
-    /* Navbar scroll state (lo togglea el JS existente) */
     #nav { transition: background .3s, box-shadow .3s, border-color .3s; }
     #nav.scrolled { background: rgba(10,15,30,.9); box-shadow: 0 10px 34px rgba(0,0,0,.45); border-color: rgba(30,45,64,.9); }
-    /* Stripes del banner de oferta */
     .stripes { background-image: repeating-linear-gradient(45deg, rgba(255,255,255,.10) 0 14px, transparent 14px 28px); }
-    /* Indicador de scroll del hero */
     @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(7px); } }
     .bob { animation: bob 1.8s ease-in-out infinite; }
-    /* Scrollbar */
     ::-webkit-scrollbar { width: 11px; height: 11px; }
     ::-webkit-scrollbar-track { background: #0A0F1E; }
     ::-webkit-scrollbar-thumb { background: #1E2D40; border-radius: 6px; border: 2px solid #0A0F1E; }
     ::-webkit-scrollbar-thumb:hover { background: #2a3d57; }
-    /* Toast */
     #toast {
       position: fixed; left: 50%; bottom: 26px; transform: translate(-50%, 24px);
       background: rgba(17,24,39,.92); backdrop-filter: blur(10px);
@@ -78,8 +94,6 @@
       opacity: 0; visibility: hidden; transition: opacity .25s, transform .25s, visibility .25s; max-width: 90vw;
     }
     #toast.show { opacity: 1; visibility: visible; transform: translate(-50%, 0); }
-    .hide-scrollbar::-webkit-scrollbar { display: none; }
-    .hide-scrollbar { scrollbar-width: none; }
   </style>
 </head>
 
@@ -89,39 +103,51 @@
   <nav id="nav" class="fixed top-0 inset-x-0 z-50 border-b border-line/40 glass">
     <div class="max-w-[1240px] mx-auto px-5 h-16 flex items-center gap-4">
       <a href="index.html" class="flex items-center gap-2.5 font-display font-extrabold text-xl shrink-0">
-        <span class="grid place-items-center w-9 h-9 rounded-lg bg-gradient-to-br from-brand to-brand2 shadow-glow text-base">⚡</span>
+        <span class="grid place-items-center w-9 h-9 rounded-lg bg-gradient-to-br from-brand to-brand2 shadow-glow"><i data-lucide="zap" class="w-5 h-5 text-white"></i></span>
         Innov<span class="text-brand2">Ventas</span>
       </a>
 
-      <label class="hidden md:flex items-center gap-2 flex-1 max-w-md mx-auto bg-surface2/70 border border-line rounded-lg px-4 py-2.5 focus-within:border-brand transition">
-        <span class="text-muted">🔍</span>
-        <input class="bg-transparent outline-none text-sm w-full placeholder:text-muted"
-          placeholder="Buscar laptops, celulares, accesorios…" />
-      </label>
+      <div class="hidden md:block relative flex-1 max-w-md mx-auto">
+        <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted pointer-events-none"></i>
+        <input id="search" class="input pl-9" placeholder="Buscar laptops, celulares, accesorios…" autocomplete="off" />
+      </div>
 
-      <div class="flex items-center gap-2 sm:gap-3 ml-auto">
-        <a href="dashboard.html"
-          class="hidden sm:inline-flex items-center gap-1.5 text-sm text-muted hover:text-brand2 transition px-2 py-1">📊 Métricas</a>
-        <button title="Favoritos"
-          class="grid place-items-center w-10 h-10 rounded-lg bg-surface2/70 border border-line hover:border-brand2 hover:text-brand2 transition">♡</button>
-        <button title="Carrito"
-          class="relative grid place-items-center w-10 h-10 rounded-lg bg-surface2/70 border border-line hover:border-brand2 transition">
-          🛒
-          <span class="absolute -top-1 -right-1 grid place-items-center min-w-[18px] h-[18px] px-1 text-[11px] font-bold rounded-md bg-accent text-white num">3</span>
-        </button>
-        <button
-          class="hidden sm:inline-flex items-center font-semibold text-sm px-4 py-2.5 rounded-lg bg-gradient-to-r from-brand to-brand2 text-white shadow-glow hover:brightness-110 transition">Iniciar sesión</button>
+      <div class="flex items-center gap-2 sm:gap-2.5 ml-auto">
+        <a href="dashboard.html" class="btn btn-ghost btn-sm hidden sm:inline-flex"><i data-lucide="bar-chart-3" class="w-4 h-4"></i> Métricas</a>
+        <button class="btn btn-secondary btn-icon" title="Favoritos" onclick="showToast('❤️ Favoritos (demo)')"><i data-lucide="heart" class="w-5 h-5"></i></button>
+
+        <div class="relative" id="cart-wrap">
+          <button id="cart-btn" class="btn btn-secondary btn-icon relative" title="Carrito">
+            <i data-lucide="shopping-cart" class="w-5 h-5"></i>
+            <span id="cart-count" class="absolute -top-1.5 -right-1.5 grid place-items-center min-w-[18px] h-[18px] px-1 text-[11px] font-bold rounded-md bg-accent text-white num" style="display:none">0</span>
+          </button>
+          <!-- Mini popover del carrito -->
+          <div id="cart-pop" class="hidden absolute right-0 top-[calc(100%+10px)] w-80 max-w-[88vw] rounded-lg border border-line bg-surface shadow-card z-50 overflow-hidden">
+            <div class="flex items-center justify-between px-4 py-3 border-b border-line">
+              <span class="font-display font-semibold text-sm flex items-center gap-2"><i data-lucide="shopping-bag" class="w-4 h-4 text-brand2"></i> Tu carrito</span>
+              <span id="cart-pop-count" class="text-xs text-muted">0 ítems</span>
+            </div>
+            <div id="cart-body" class="max-h-72 overflow-y-auto"></div>
+            <div id="cart-foot" class="border-t border-line p-3">
+              <div class="flex justify-between text-sm mb-3"><span class="text-muted">Subtotal</span><span id="cart-subtotal" class="font-display font-bold num">S/ 0</span></div>
+              <div class="flex gap-2">
+                <button class="btn btn-ghost btn-sm flex-1" onclick="clearCart()"><i data-lucide="trash-2" class="w-4 h-4"></i> Vaciar</button>
+                <button class="btn btn-primary btn-sm flex-1" onclick="checkout()">Finalizar compra</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-md hidden sm:inline-flex" onclick="showToast('🔐 Inicio de sesión (demo)')">Iniciar sesión</button>
       </div>
     </div>
   </nav>
 
   <!-- ===== Hero (pantalla completa con imagen de fondo) ===== -->
   <header class="relative min-h-screen flex items-center overflow-hidden">
-    <!-- Imagen de fondo (con respaldo: si falla, queda el degradado del body) -->
     <img src="https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=1920&q=80&auto=format&fit=crop"
       alt="" aria-hidden="true" onerror="this.style.display='none'"
       class="absolute inset-0 w-full h-full object-cover" />
-    <!-- Capas de oscurecimiento para legibilidad -->
     <div class="absolute inset-0 bg-gradient-to-r from-ink via-ink/92 to-ink/45"></div>
     <div class="absolute inset-0 bg-gradient-to-t from-ink via-transparent to-ink/70"></div>
     <div class="absolute -top-24 right-0 w-[520px] h-[520px] rounded-full bg-brand/25 blur-[130px] pointer-events-none"></div>
@@ -130,29 +156,29 @@
     <div class="relative w-full max-w-[1240px] mx-auto px-5 pt-24 pb-20 grid lg:grid-cols-[1.05fr_.95fr] gap-12 items-center">
       <div>
         <span data-hero
-          class="inline-flex items-center gap-2 text-xs font-semibold tracking-wide bg-accent/15 text-accent border border-accent/40 rounded-md px-3.5 py-1.5">🔥 Oferta de lanzamiento</span>
+          class="inline-flex items-center gap-2 text-xs font-semibold tracking-wide bg-accent/15 text-accent border border-accent/40 rounded-md px-3.5 py-1.5"><i data-lucide="flame" class="w-3.5 h-3.5"></i> Oferta de lanzamiento</span>
         <h1 data-hero class="font-display font-extrabold text-5xl md:text-6xl xl:text-7xl leading-[1.04] mt-5">
           Tecnología que<br><span class="grad-text">transforma tu vida</span>
         </h1>
         <p data-hero class="text-muted text-lg mt-5 max-w-md">Las mejores marcas. Los mejores precios. Envío gratis a Lima.</p>
         <div data-hero class="flex flex-wrap gap-3 mt-8">
           <button onclick="document.querySelector('#destacados').scrollIntoView({behavior:'smooth'})"
-            class="font-semibold px-7 py-3.5 rounded-lg bg-gradient-to-r from-brand to-brand2 text-white shadow-glow hover:brightness-110 hover:-translate-y-0.5 transition">Ver ofertas</button>
+            class="btn btn-primary h-12 px-7 hover:-translate-y-0.5">Ver ofertas</button>
           <button onclick="document.querySelector('#destacados').scrollIntoView({behavior:'smooth'})"
-            class="font-semibold px-7 py-3.5 rounded-lg border border-line bg-surface/40 backdrop-blur hover:border-brand2 hover:text-brand2 transition">Ver catálogo</button>
+            class="btn btn-outline h-12 px-7 backdrop-blur">Ver catálogo</button>
         </div>
         <div data-hero class="flex flex-wrap gap-x-7 gap-y-2 mt-9 text-sm text-muted">
-          <span class="flex items-center gap-2">✅ Garantía oficial</span>
-          <span class="flex items-center gap-2">🚚 Envío 24-48h</span>
-          <span class="flex items-center gap-2">💬 Asistente Nova 24/7</span>
+          <span class="flex items-center gap-2"><i data-lucide="badge-check" class="w-4 h-4 text-success"></i> Garantía oficial</span>
+          <span class="flex items-center gap-2"><i data-lucide="truck" class="w-4 h-4 text-brand2"></i> Envío 24-48h</span>
+          <span class="flex items-center gap-2"><i data-lucide="message-circle" class="w-4 h-4 text-accent"></i> Asistente Nova 24/7</span>
         </div>
       </div>
 
       <div data-hero-card class="relative">
         <div class="glass border border-line rounded-xl p-8 shadow-card">
           <div class="flex items-center justify-between mb-6">
-            <span class="text-xs font-semibold tracking-wide text-accent">⚡ MÁS VENDIDA</span>
-            <span class="text-xs text-success font-semibold">✓ En stock</span>
+            <span class="inline-flex items-center gap-1.5 text-xs font-semibold tracking-wide text-accent"><i data-lucide="zap" class="w-3.5 h-3.5"></i> MÁS VENDIDA</span>
+            <span class="inline-flex items-center gap-1 text-xs text-success font-semibold"><i data-lucide="check" class="w-3.5 h-3.5"></i> En stock</span>
           </div>
           <div class="aspect-[4/3] rounded-lg bg-gradient-to-br from-brand/25 to-brand2/10 border border-line grid place-items-center overflow-hidden">
             <img src="https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=560&q=80&auto=format&fit=crop"
@@ -172,7 +198,7 @@
           </div>
         </div>
         <div class="absolute -bottom-4 -left-4 glass border border-line rounded-lg px-4 py-3 shadow-card hidden sm:flex items-center gap-3">
-          <span class="text-2xl">🚚</span>
+          <i data-lucide="truck" class="w-6 h-6 text-brand2"></i>
           <div class="text-xs"><div class="font-semibold">Envío gratis</div><div class="text-muted">a todo Lima</div></div>
         </div>
       </div>
@@ -180,16 +206,16 @@
 
     <!-- Indicador de scroll -->
     <a href="#destacados" aria-label="Desplazar"
-      class="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-muted hover:text-brand2 transition">
+      class="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 text-muted hover:text-brand2 transition">
       <span class="text-[11px] tracking-widest uppercase">Explorar</span>
-      <span class="bob text-xl">⌄</span>
+      <span class="bob grid place-items-center w-9 h-9 rounded-full border border-line glass"><i data-lucide="chevron-down" class="w-4 h-4"></i></span>
     </a>
   </header>
 
   <!-- ===== Categorías ===== -->
   <div class="border-y border-line/60 bg-surface/30">
     <div class="max-w-[1240px] mx-auto px-5 py-5">
-      <div id="cats" class="flex gap-3 overflow-x-auto hide-scrollbar"></div>
+      <div id="cats" class="flex flex-wrap justify-center gap-2.5"></div>
     </div>
   </div>
 
@@ -199,7 +225,7 @@
       <h2 id="destacados" class="font-display font-extrabold text-3xl md:text-4xl flex items-center gap-3">
         <span class="inline-block w-1.5 h-8 rounded bg-gradient-to-b from-brand to-brand2"></span>Productos Destacados
       </h2>
-      <a href="#" class="hidden sm:inline-flex items-center gap-1 text-sm text-brand2 hover:gap-2 transition-all">Ver todo →</a>
+      <span id="results-count" class="hidden sm:inline-flex items-center gap-1 text-sm text-muted"></span>
     </div>
     <div id="products" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5"></div>
   </section>
@@ -210,7 +236,7 @@
       <div class="absolute inset-0 stripes opacity-60"></div>
       <div class="relative flex flex-wrap items-center justify-between gap-7 p-8 md:p-10">
         <div>
-          <div class="text-sm font-semibold tracking-wide opacity-90">⚡ OFERTA DEL DÍA</div>
+          <div class="text-sm font-semibold tracking-wide opacity-90 flex items-center gap-2"><i data-lucide="zap" class="w-4 h-4"></i> OFERTA DEL DÍA</div>
           <div class="font-display font-extrabold text-2xl md:text-4xl mt-1.5">Laptop Gaming RTX 4060 — 40% OFF</div>
         </div>
         <div id="countdown" class="flex items-center gap-3">
@@ -227,7 +253,7 @@
           </div>
         </div>
         <button onclick="showToast('🎉 ¡Oferta agregada! Pregúntale a Nova por los métodos de pago.')"
-          class="font-semibold px-7 py-3.5 rounded-lg bg-white text-accent hover:bg-white/90 hover:-translate-y-0.5 transition shadow-lg">Ver oferta</button>
+          class="btn h-12 px-7 bg-white text-accent hover:bg-white/90 hover:-translate-y-0.5 shadow-lg">Ver oferta</button>
       </div>
     </div>
   </div>
@@ -237,15 +263,15 @@
     <div class="max-w-[1240px] mx-auto px-5 py-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
       <div>
         <div class="flex items-center gap-2.5 font-display font-extrabold text-lg">
-          <span class="grid place-items-center w-8 h-8 rounded-lg bg-gradient-to-br from-brand to-brand2 text-sm">⚡</span>
+          <span class="grid place-items-center w-8 h-8 rounded-lg bg-gradient-to-br from-brand to-brand2"><i data-lucide="zap" class="w-4 h-4 text-white"></i></span>
           Innov<span class="text-brand2">Ventas</span>
         </div>
         <p class="text-muted text-sm mt-4 max-w-[260px]">Tecnología al alcance de todos.</p>
         <div class="flex gap-2 mt-5">
-          <a href="#" class="grid place-items-center w-9 h-9 rounded-lg bg-surface2/70 border border-line hover:border-brand2 hover:text-brand2 transition">📘</a>
-          <a href="#" class="grid place-items-center w-9 h-9 rounded-lg bg-surface2/70 border border-line hover:border-brand2 hover:text-brand2 transition">📸</a>
-          <a href="#" class="grid place-items-center w-9 h-9 rounded-lg bg-surface2/70 border border-line hover:border-brand2 hover:text-brand2 transition">🐦</a>
-          <a href="#" class="grid place-items-center w-9 h-9 rounded-lg bg-surface2/70 border border-line hover:border-brand2 hover:text-brand2 transition">▶️</a>
+          <a href="#" class="btn btn-secondary btn-icon !w-9 !h-9"><i data-lucide="facebook" class="w-4 h-4"></i></a>
+          <a href="#" class="btn btn-secondary btn-icon !w-9 !h-9"><i data-lucide="instagram" class="w-4 h-4"></i></a>
+          <a href="#" class="btn btn-secondary btn-icon !w-9 !h-9"><i data-lucide="twitter" class="w-4 h-4"></i></a>
+          <a href="#" class="btn btn-secondary btn-icon !w-9 !h-9"><i data-lucide="youtube" class="w-4 h-4"></i></a>
         </div>
       </div>
       <div>
@@ -269,9 +295,9 @@
       <div>
         <h4 class="font-display font-bold text-sm tracking-wide uppercase text-muted mb-4">Contacto</h4>
         <ul class="space-y-2.5 text-sm text-muted">
-          <li>📞 01-234-5678</li>
-          <li>📧 <a href="mailto:info@innovventas.pe" class="hover:text-brand2 transition">info@innovventas.pe</a></li>
-          <li>📍 Jr. Lampa 123, Lima</li>
+          <li class="flex items-center gap-2"><i data-lucide="phone" class="w-4 h-4 text-brand2"></i> 01-234-5678</li>
+          <li class="flex items-center gap-2"><i data-lucide="mail" class="w-4 h-4 text-brand2"></i> <a href="mailto:info@innovventas.pe" class="hover:text-brand2 transition">info@innovventas.pe</a></li>
+          <li class="flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4 text-brand2"></i> Jr. Lampa 123, Lima</li>
         </ul>
         <div class="flex gap-2 mt-4">
           <span class="text-[11px] font-bold bg-surface2 border border-line rounded-md px-2 py-1">VISA</span>
@@ -292,15 +318,18 @@
   <div id="toast"></div>
 
   <script>
-    // Navbar blur al hacer scroll (se conserva el id #nav y la clase .scrolled)
+    const icons = () => { if (window.lucide) lucide.createIcons(); };
+
+    // Navbar blur al hacer scroll
     addEventListener("scroll", () => document.getElementById("nav").classList.toggle("scrolled", scrollY > 10));
 
-    // Categorías
-    const CATS = [["💻", "Laptops"], ["📱", "Smartphones"], ["🖥️", "Monitores"], ["⌨️", "Periféricos"], ["🎧", "Audio"], ["📷", "Cámaras"], ["🔌", "Accesorios"], ["🎮", "Gaming"]];
-    document.getElementById("cats").innerHTML = CATS.map(([i, n]) =>
-      `<button class="cat-chip shrink-0 inline-flex items-center gap-2 text-sm font-medium whitespace-nowrap bg-surface2/60 border border-line rounded-lg px-4 py-2.5 hover:border-brand2 hover:text-brand2 hover:-translate-y-0.5 transition" onclick="showToast('Categoría: ${n}')">${i} ${n}</button>`).join("");
-
-    // Productos (ficticios pero creíbles) — con foto real (CDN) y respaldo a emoji
+    // ---------- Datos ----------
+    // [icono lucide, nombre de categoría]. "Todos" no filtra.
+    const CATS = [
+      ["layout-grid", "Todos"], ["laptop", "Laptops"], ["smartphone", "Smartphones"],
+      ["monitor", "Monitores"], ["keyboard", "Periféricos"], ["headphones", "Audio"],
+      ["camera", "Cámaras"], ["cable", "Accesorios"], ["gamepad-2", "Gaming"]
+    ];
     const PRODUCTS = [
       { e: "💻", b: "ASUS", c: "Laptops", n: "ASUS VivoBook 15 · Intel i5, 8GB RAM, 512GB SSD", now: 1999, old: 2499, r: 4.5, rev: 128, img: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=420&q=80&auto=format&fit=crop" },
       { e: "📱", b: "Samsung", c: "Smartphones", n: 'Samsung Galaxy A55 · 6.6" AMOLED, 256GB', now: 1299, old: 1599, r: 4.6, rev: 212, img: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=420&q=80&auto=format&fit=crop" },
@@ -311,18 +340,45 @@
       { e: "📷", b: "Logitech", c: "Cámaras", n: "Logitech C920 HD · Webcam 1080p 30fps", now: 299, old: 379, r: 4.5, rev: 256, img: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=420&q=80&auto=format&fit=crop" },
       { e: "🎮", b: "Microsoft", c: "Gaming", n: "Control Xbox Series · Inalámbrico PC/Console", now: 259, old: 329, r: 4.6, rev: 163, img: "https://images.unsplash.com/photo-1592840496694-26d035b52b48?w=420&q=80&auto=format&fit=crop" },
     ];
+    PRODUCTS.forEach((p, i) => p.id = i);
     const money = v => "S/ " + v.toLocaleString("es-PE");
     const starStr = r => "★".repeat(Math.round(r)) + "☆".repeat(5 - Math.round(r));
-    document.getElementById("products").innerHTML = PRODUCTS.map(p => {
+
+    let activeCat = "Todos";
+    let searchTerm = "";
+
+    // ---------- Categorías ----------
+    document.getElementById("cats").innerHTML = CATS.map(([ic, n]) =>
+      `<button class="chip cat-chip${n === activeCat ? ' chip-active' : ''}" data-cat="${n}"><i data-lucide="${ic}" class="w-4 h-4"></i> ${n}</button>`).join("");
+    document.getElementById("cats").addEventListener("click", e => {
+      const b = e.target.closest(".cat-chip"); if (!b) return;
+      activeCat = b.dataset.cat;
+      document.querySelectorAll(".cat-chip").forEach(x => x.classList.toggle("chip-active", x.dataset.cat === activeCat));
+      renderProducts();
+    });
+
+    // ---------- Buscador ----------
+    const searchInput = document.getElementById("search");
+    if (searchInput) searchInput.addEventListener("input", e => { searchTerm = e.target.value; renderProducts(); });
+
+    function resetFilters() {
+      activeCat = "Todos"; searchTerm = "";
+      if (searchInput) searchInput.value = "";
+      document.querySelectorAll(".cat-chip").forEach(x => x.classList.toggle("chip-active", x.dataset.cat === "Todos"));
+      renderProducts();
+    }
+
+    // ---------- Render de productos ----------
+    function cardHTML(p) {
       const save = p.old - p.now, pct = Math.round(save / p.old * 100);
-      return `<article class="pcard group flex flex-col bg-gradient-to-b from-surface to-surface2/60 border border-line rounded-lg overflow-hidden hover:border-brand2/70 hover:shadow-card hover:-translate-y-1 transition duration-300">
+      return `<article class="pcard group flex flex-col card overflow-hidden hover:border-brand2/70 hover:shadow-card hover:-translate-y-1 transition duration-300">
         <div class="relative h-44 bg-surface2/40 overflow-hidden">
           <span class="absolute top-3 left-3 z-10 text-xs font-bold bg-accent text-white rounded-md px-2 py-1 shadow">-${pct}%</span>
-          <button title="Favorito" class="absolute top-3 right-3 z-10 grid place-items-center w-8 h-8 rounded-lg glass border border-line/80 text-sm hover:text-accent transition" onclick="showToast('❤️ Añadido a favoritos: ${p.b}')">♡</button>
+          <button title="Favorito" class="absolute top-3 right-3 z-10 grid place-items-center w-8 h-8 rounded-lg glass border border-line/80 text-fg hover:text-accent transition" onclick="showToast('❤️ Añadido a favoritos: ${p.b}')"><i data-lucide="heart" class="w-4 h-4"></i></button>
           <img src="${p.img}" alt="${p.n}" loading="lazy"
             onerror="this.style.display='none';this.nextElementSibling.style.display='grid'"
             class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-          <span class="emoji-fallback w-full h-full place-items-center text-6xl" style="display:none">${p.e}</span>
+          <span class="w-full h-full place-items-center text-6xl" style="display:none">${p.e}</span>
         </div>
         <div class="flex flex-col flex-1 p-4">
           <div class="text-[11px] font-semibold uppercase tracking-wide text-muted">${p.b} · ${p.c}</div>
@@ -333,14 +389,116 @@
             <span class="font-display font-extrabold text-xl text-brand2 num">${money(p.now)}</span>
           </div>
           <div class="text-xs text-success font-semibold mt-1 num">Ahorra ${money(save)} (${pct}% OFF)</div>
-          <div class="text-xs text-muted mt-1.5">✓ En stock</div>
-          <button onclick="showToast('🛒 Agregado: ${p.b}')"
-            class="mt-4 w-full font-semibold text-sm py-2.5 rounded-lg bg-gradient-to-r from-brand to-brand2 text-white hover:brightness-110 transition">Agregar al carrito</button>
+          <div class="text-xs text-muted mt-1.5 flex items-center gap-1"><i data-lucide="check" class="w-3.5 h-3.5 text-success"></i> En stock</div>
+          <button onclick="addToCart(${p.id}, event)" class="btn btn-primary btn-sm w-full mt-4"><i data-lucide="shopping-cart" class="w-4 h-4"></i> Agregar al carrito</button>
         </div>
       </article>`;
-    }).join("");
+    }
 
-    // Contador regresivo hasta fin del día
+    function renderProducts() {
+      const q = searchTerm.trim().toLowerCase();
+      const list = PRODUCTS.filter(p =>
+        (activeCat === "Todos" || p.c === activeCat) &&
+        (!q || (p.n + " " + p.b + " " + p.c).toLowerCase().includes(q))
+      );
+      const grid = document.getElementById("products");
+      const counter = document.getElementById("results-count");
+      counter.innerHTML = `${list.length} de ${PRODUCTS.length} productos`;
+
+      if (!list.length) {
+        grid.innerHTML = `<div class="col-span-full flex flex-col items-center justify-center gap-3 py-16 text-center">
+          <i data-lucide="search-x" class="w-10 h-10 text-muted"></i>
+          <p class="text-muted">Sin resultados en <b class="text-fg">${activeCat}</b>${q ? ` para “${searchTerm}”` : ''}.</p>
+          <button class="btn btn-outline btn-sm" onclick="resetFilters()">Ver todo</button>
+        </div>`;
+        icons();
+        return;
+      }
+      grid.innerHTML = list.map(cardHTML).join("");
+      icons();
+      if (window.gsap) gsap.from(".pcard", { opacity: 0, y: 18, duration: .45, stagger: .04, ease: "power2.out", clearProps: "all" });
+    }
+
+    // ---------- Carrito (MVP, persistente en localStorage) ----------
+    const CART_KEY = "innov_cart_v1";
+    let cart = loadCart();
+    let cartOpen = false;
+    function loadCart() { try { return JSON.parse(localStorage.getItem(CART_KEY)) || []; } catch (e) { return []; } }
+    function saveCart() { try { localStorage.setItem(CART_KEY, JSON.stringify(cart)); } catch (e) {} }
+    const cartCount = () => cart.reduce((a, i) => a + i.qty, 0);
+    const cartSubtotal = () => cart.reduce((a, i) => a + PRODUCTS[i.id].now * i.qty, 0);
+
+    function addToCart(id, ev) {
+      if (ev) ev.stopPropagation();
+      const line = cart.find(i => i.id === id);
+      if (line) line.qty++; else cart.push({ id, qty: 1 });
+      saveCart(); renderCart(); openCart(true);
+      const btn = document.getElementById("cart-btn");
+      if (window.gsap) gsap.fromTo(btn, { scale: .85 }, { scale: 1, duration: .35, ease: "back.out(3)" });
+      showToast("🛒 Agregado: " + PRODUCTS[id].b);
+    }
+    function changeQty(id, d) {
+      const line = cart.find(i => i.id === id); if (!line) return;
+      line.qty += d;
+      if (line.qty <= 0) cart = cart.filter(i => i.id !== id);
+      saveCart(); renderCart();
+    }
+    function removeFromCart(id) { cart = cart.filter(i => i.id !== id); saveCart(); renderCart(); }
+    function clearCart() { cart = []; saveCart(); renderCart(); }
+    function checkout() {
+      if (!cart.length) { showToast("Tu carrito está vacío 🛒"); return; }
+      clearCart(); openCart(false);
+      showToast("✅ Compra simulada — ¡gracias por tu compra!");
+    }
+    function openCart(show) {
+      cartOpen = show;
+      document.getElementById("cart-pop").classList.toggle("hidden", !show);
+    }
+    document.getElementById("cart-btn").onclick = () => openCart(!cartOpen);
+    document.addEventListener("click", e => {
+      const w = document.getElementById("cart-wrap");
+      if (cartOpen && !w.contains(e.target)) openCart(false);
+    });
+    addEventListener("keydown", e => { if (e.key === "Escape") openCart(false); });
+
+    function renderCart() {
+      const n = cartCount();
+      const badge = document.getElementById("cart-count");
+      badge.textContent = n; badge.style.display = n ? "grid" : "none";
+      document.getElementById("cart-pop-count").textContent = n + (n === 1 ? " ítem" : " ítems");
+      document.getElementById("cart-subtotal").textContent = money(cartSubtotal());
+      const body = document.getElementById("cart-body");
+      const foot = document.getElementById("cart-foot");
+      if (!cart.length) {
+        body.innerHTML = `<div class="flex flex-col items-center gap-2 py-10 text-center text-muted">
+          <i data-lucide="shopping-cart" class="w-8 h-8 opacity-60"></i><span class="text-sm">Tu carrito está vacío</span></div>`;
+        foot.style.display = "none";
+      } else {
+        foot.style.display = "block";
+        body.innerHTML = cart.map(line => {
+          const p = PRODUCTS[line.id];
+          return `<div class="flex items-center gap-3 px-4 py-3 border-b border-line/60 last:border-0">
+            <div class="w-12 h-12 rounded-md bg-surface2 overflow-hidden shrink-0 grid place-items-center">
+              <img src="${p.img}" alt="" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'" class="w-full h-full object-cover" />
+              <span class="w-full h-full place-items-center text-lg" style="display:none">${p.e}</span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="text-xs font-medium truncate">${p.n}</div>
+              <div class="text-xs text-brand2 font-semibold num mt-0.5">${money(p.now)}</div>
+              <div class="flex items-center gap-2 mt-1.5">
+                <button class="qbtn" onclick="changeQty(${p.id},-1)"><i data-lucide="minus" class="w-3 h-3"></i></button>
+                <span class="text-xs num w-5 text-center">${line.qty}</span>
+                <button class="qbtn" onclick="changeQty(${p.id},1)"><i data-lucide="plus" class="w-3 h-3"></i></button>
+              </div>
+            </div>
+            <button class="text-muted hover:text-danger transition" title="Quitar" onclick="removeFromCart(${p.id})"><i data-lucide="x" class="w-4 h-4"></i></button>
+          </div>`;
+        }).join("");
+      }
+      icons();
+    }
+
+    // ---------- Contador regresivo ----------
     const cdH = document.getElementById("cd-h"), cdM = document.getElementById("cd-m"), cdS = document.getElementById("cd-s");
     function tick() {
       const now = new Date(), end = new Date(now); end.setHours(23, 59, 59, 999);
@@ -351,7 +509,7 @@
     }
     setInterval(tick, 1000); tick();
 
-    // Toast
+    // ---------- Toast ----------
     let toastT;
     function showToast(msg) {
       const t = document.getElementById("toast");
@@ -359,23 +517,20 @@
       clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("show"), 2600);
     }
 
-    // ===== Animaciones GSAP (elegantes, con degradación si el CDN falla) =====
+    // ---------- Init ----------
+    renderProducts();
+    renderCart();
+    icons();
+
+    // ---------- Animaciones GSAP ----------
     if (window.gsap) {
       if (window.ScrollTrigger) gsap.registerPlugin(ScrollTrigger);
-      gsap.from("[data-hero]", { y: 26, opacity: 0, duration: .7, ease: "power3.out", stagger: .09, delay: .15 });
-      gsap.from("[data-hero-card]", { y: 40, opacity: 0, scale: .96, duration: .9, ease: "power3.out", delay: .3 });
-      gsap.from(".cat-chip", { y: 14, opacity: 0, duration: .5, ease: "power2.out", stagger: .05, delay: .2 });
-
+      gsap.from("[data-hero]", { y: 26, opacity: 0, duration: .7, ease: "power3.out", stagger: .09, delay: .15, clearProps: "all" });
+      gsap.from("[data-hero-card]", { y: 40, opacity: 0, scale: .96, duration: .9, ease: "power3.out", delay: .3, clearProps: "all" });
+      gsap.from(".cat-chip", { y: 12, opacity: 0, duration: .45, ease: "power2.out", stagger: .04, delay: .2, clearProps: "all" });
       if (window.ScrollTrigger) {
-        gsap.utils.toArray(".pcard").forEach((card, i) => {
-          gsap.from(card, {
-            scrollTrigger: { trigger: card, start: "top 90%" },
-            y: 34, opacity: 0, duration: .6, ease: "power2.out", delay: (i % 4) * .06
-          });
-        });
-        gsap.utils.toArray("[data-reveal]").forEach((el) => {
-          gsap.from(el, { scrollTrigger: { trigger: el, start: "top 88%" }, y: 30, opacity: 0, duration: .7, ease: "power2.out" });
-        });
+        gsap.utils.toArray("[data-reveal]").forEach((el) =>
+          gsap.from(el, { scrollTrigger: { trigger: el, start: "top 88%" }, y: 30, opacity: 0, duration: .7, ease: "power2.out", clearProps: "all" }));
       }
     }
   </script>

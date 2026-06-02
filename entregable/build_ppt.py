@@ -247,14 +247,15 @@ rows = [("Frontend", "HTML/CSS/JS vanilla", "Embebible con un <script>, sin depe
         ("Backend", "Python + FastAPI", "API REST rápida y asíncrona; documentación automática; ecosistema de IA."),
         ("Motor NLP", "LLM Groq (Llama 3.3)", "Entiende lenguaje libre con las FAQs como contexto; intercambiable con Azure CLU."),
         ("Base de datos", "PostgreSQL (Neon)", "Robusta y open source; ideal para logs y métricas; migrable a Azure DB."),
+        ("Contenedores", "Docker + Compose", "Mismo entorno en desarrollo y producción; un comando levanta todo; listo para Azure."),
         ("Despliegue", "Render + Netlify", "Hosting gratuito; el backend resguarda las claves de API (no se exponen).")]
-y = 2.1
+y = 2.0
 for comp, tech, why in rows:
-    card(s, MX, Inches(y), Inches(11.5), Inches(0.92))
-    textbox(s, MX + Inches(0.3), Inches(y), Inches(2.3), Inches(0.92), [{"text": comp, "size": 13.5, "color": ACCENT, "font": FSB, "bold": True}], anchor=MSO_ANCHOR.MIDDLE)
-    textbox(s, MX + Inches(2.7), Inches(y), Inches(2.8), Inches(0.92), [{"text": tech, "size": 13.5, "color": INK, "font": FSB, "bold": True}], anchor=MSO_ANCHOR.MIDDLE)
-    textbox(s, MX + Inches(5.6), Inches(y), Inches(5.7), Inches(0.92), [{"text": why, "size": 12, "color": MUTED, "line": 1.15}], anchor=MSO_ANCHOR.MIDDLE)
-    y += 0.99
+    card(s, MX, Inches(y), Inches(11.5), Inches(0.74))
+    textbox(s, MX + Inches(0.3), Inches(y), Inches(2.3), Inches(0.74), [{"text": comp, "size": 12.5, "color": ACCENT, "font": FSB, "bold": True}], anchor=MSO_ANCHOR.MIDDLE)
+    textbox(s, MX + Inches(2.7), Inches(y), Inches(2.8), Inches(0.74), [{"text": tech, "size": 12.5, "color": INK, "font": FSB, "bold": True}], anchor=MSO_ANCHOR.MIDDLE)
+    textbox(s, MX + Inches(5.6), Inches(y), Inches(5.7), Inches(0.74), [{"text": why, "size": 11, "color": MUTED, "line": 1.12}], anchor=MSO_ANCHOR.MIDDLE)
+    y += 0.82
 footer(s)
 
 # ===== 9 · SOLUCIÓN · COSTOS =====
@@ -281,7 +282,40 @@ textbox(s, MX, Inches(6.55), Inches(11.4), Inches(0.35),
         [{"text": "Desarrollo: equipo de 3 personas, ~4 semanas (costo académico). Cifras de Azure referenciales según volumen.", "size": 11, "color": MUTED, "italic": True}])
 footer(s)
 
-# ===== 10 · SOLUCIÓN · DISEÑO: FAQs =====
+# ===== 10 · SOLUCIÓN · RETORNO (ROI) =====
+s = blank(); header(s, "Solución · Retorno", "Retorno de inversión: cómo gana InnovVentas")
+vias = [("Ventas recuperadas", "Resuelve la duda en el momento de la compra → menos carritos abandonados."),
+        ("Ahorro en soporte", "Automatiza consultas repetitivas → menos tickets y horas-persona."),
+        ("Retención", "Atención inmediata 24/7 → mejor experiencia y clientes que vuelven."),
+        ("Datos accionables", "El dashboard revela qué se pregunta → mejora catálogo, precios y FAQs.")]
+for i, (t, d) in enumerate(vias):
+    x = MX + i * Inches(2.92)
+    card(s, x, Inches(2.05), Inches(2.7), Inches(1.6))
+    rect(s, x + Inches(0.22), Inches(2.27), Inches(0.16), Inches(0.16), GREEN)
+    textbox(s, x + Inches(0.22), Inches(2.52), Inches(2.32), Inches(1.05),
+            [{"text": t, "size": 13.5, "color": INK, "font": FSB, "bold": True, "sa": 4},
+             {"text": d, "size": 10.5, "color": MUTED, "line": 1.15}])
+card(s, MX, Inches(3.9), Inches(11.5), Inches(2.5), fill=LIGHT)
+textbox(s, MX + Inches(0.35), Inches(4.1), Inches(6.5), Inches(0.3),
+        [{"text": "ESTIMACIÓN ILUSTRATIVA (SUPUESTOS DECLARADOS)", "size": 11, "color": ACCENT, "font": FSB, "bold": True}])
+roi_lines = [("Ticket promedio (AOV)", "S/ 850"),
+             ("Carritos abandonados / mes", "~700  (70% de 1,000)"),
+             ("Recuperación conservadora del bot", "5%  →  35 pedidos / mes"),
+             ("Ingreso adicional", "35 × S/ 850 ≈ S/ 29,750 / mes"),
+             ("Costo de operación", "≈ US$ 60 / mes  (US$ 0 en el MVP)")]
+y = 4.5
+for k, v in roi_lines:
+    textbox(s, MX + Inches(0.35), Inches(y), Inches(4.2), Inches(0.32), [{"text": k, "size": 12, "color": MUTED}])
+    textbox(s, MX + Inches(4.55), Inches(y), Inches(2.4), Inches(0.32), [{"text": v, "size": 12, "color": INK, "font": FSB, "bold": True}])
+    y += 0.34
+card(s, MX + Inches(7.25), Inches(4.2), Inches(3.95), Inches(2.0), fill=GREENB)
+textbox(s, MX + Inches(7.5), Inches(4.42), Inches(3.5), Inches(1.6),
+        [{"text": "PAYBACK INMEDIATO", "size": 12, "color": GREEN, "font": FSB, "bold": True, "sa": 8},
+         {"text": "El costo de operación es casi nulo: recuperando apenas 1–2 ventas al mes el chatbot ya se paga.", "size": 12.5, "color": INK, "line": 1.25, "sa": 8},
+         {"text": "Cada venta recuperada es casi ganancia neta.", "size": 11.5, "color": MUTED, "italic": True, "line": 1.2}])
+footer(s)
+
+# ===== 11 · SOLUCIÓN · DISEÑO: FAQs =====
 s = blank(); header(s, "Solución · Diseño", "Base de conocimiento: FAQs por categoría")
 cats = [("Productos", "Especificaciones, stock y garantía"), ("Precios", "Precios con IGV, descuentos y cupones"),
         ("Métodos de pago", "Yape, Plin, tarjetas y cuotas"), ("Proceso de compra", "Pasos, compra invitado, cancelación"),
@@ -332,7 +366,34 @@ textbox(s, Inches(7.0), Inches(4.9), Inches(4.6), Inches(1.15),
         [{"text": "BASE DE DATOS", "size": 11, "color": ACCENT, "font": FSB, "bold": True, "align": PP_ALIGN.CENTER, "sa": 2},
          {"text": "PostgreSQL (Neon)\nfaqs · chat_logs · sessions · feedback", "size": 11.5, "color": INK, "align": PP_ALIGN.CENTER, "line": 1.1}], anchor=MSO_ANCHOR.MIDDLE)
 textbox(s, MX, Inches(6.35), Inches(11.4), Inches(0.4),
-        [{"text": "Motor NLP y base de datos son piezas intercambiables (se cambian por variables de entorno).", "size": 12, "color": MUTED, "italic": True, "align": PP_ALIGN.CENTER}])
+        [{"text": "Piezas intercambiables (variables de entorno).  ·  Seguridad: HTTPS, claves solo en el backend y sin datos personales sensibles (Ley N° 29733).", "size": 11.5, "color": MUTED, "italic": True, "align": PP_ALIGN.CENTER}])
+footer(s)
+
+# ===== 13b · SOLUCIÓN · DISEÑO: MODELO DE DATOS Y ENTORNO =====
+s = blank(); header(s, "Solución · Diseño", "Modelo de datos y entorno")
+textbox(s, MX, Inches(2.0), Inches(5.3), Inches(0.3), [{"text": "ENTORNO — DOCKER", "size": 12, "color": ACCENT, "font": FSB, "bold": True}])
+env = ["Docker + Docker Compose: un comando (docker-compose up) levanta el backend y PostgreSQL juntos.",
+       "Mismo entorno en desarrollo (Windows 11) y producción → portabilidad; listo para Azure Container Instances.",
+       "init.sql crea el esquema y carga las 18 FAQs al iniciar la base de datos."]
+y = 2.45
+for e in env:
+    rect(s, MX, Inches(y + 0.06), Inches(0.14), Inches(0.14), ACCENT)
+    textbox(s, MX + Inches(0.32), Inches(y - 0.04), Inches(4.95), Inches(0.95), [{"text": e, "size": 11.5, "color": INK, "line": 1.2}])
+    y += 1.05
+textbox(s, Inches(7.0), Inches(2.0), Inches(5.3), Inches(0.3), [{"text": "MODELO DE DATOS — POSTGRESQL", "size": 12, "color": ACCENT, "font": FSB, "bold": True}])
+tbls = [("faqs", "base de conocimiento: intención, pregunta, respuesta, keywords"),
+        ("sessions", "sesiones: inicio/fin, resuelto, escalado"),
+        ("chat_logs", "cada mensaje + intención + confianza"),
+        ("feedback", "calificación CSAT (1–5)")]
+y = 2.45
+for t, d in tbls:
+    card(s, Inches(7.0), Inches(y), Inches(5.4), Inches(0.78))
+    textbox(s, Inches(7.25), Inches(y), Inches(5.0), Inches(0.78),
+            [{"runs": [{"text": t + "   ", "size": 13, "color": ACCENT, "font": FSB, "bold": True},
+                       {"text": "— " + d, "size": 11, "color": MUTED}]}], anchor=MSO_ANCHOR.MIDDLE)
+    y += 0.9
+textbox(s, MX, Inches(6.45), Inches(11.4), Inches(0.4),
+        [{"text": "Además, vistas SQL para el dashboard (v_daily_metrics, v_top_intents). Cada respuesta queda registrada → es la base de las métricas.", "size": 11.5, "color": MUTED, "italic": True}])
 footer(s)
 
 # ===== 13 · IMPLEMENTACIÓN: PLAN =====
@@ -412,7 +473,29 @@ textbox(s, MX + Inches(0.35), Inches(4.55), Inches(11), Inches(1.1),
                    {"text": "publicado en Netlify (frontend estático)", "size": 13.5, "color": MUTED}]}])
 footer(s)
 
-# ===== 18 · CONCLUSIONES =====
+# ===== 18b · LIMITACIONES Y TRABAJO FUTURO =====
+s = blank(); header(s, "Madurez del proyecto", "Limitaciones y trabajo futuro")
+limpairs = [
+    ("Sin integración con inventario en vivo", "Conectar el catálogo: stock y precios en tiempo real vía API."),
+    ("El plan gratuito de hosting «duerme» (latencia inicial)", "Migrar a Azure (App Service / Container Instances)."),
+    ("Atención solo en español", "Soporte multiidioma para ampliar mercado."),
+    ("FAQs gestionadas desde la base de datos", "Panel de administración para editar FAQs sin código."),
+]
+textbox(s, MX + Inches(2.5), Inches(2.0), Inches(3.5), Inches(0.3), [{"text": "LIMITACIÓN ACTUAL", "size": 11, "color": AMBER, "font": FSB, "bold": True}])
+textbox(s, MX + Inches(7.0), Inches(2.0), Inches(3.5), Inches(0.3), [{"text": "TRABAJO FUTURO", "size": 11, "color": GREEN, "font": FSB, "bold": True}])
+y = 2.4
+for lim, fut in limpairs:
+    card(s, MX, Inches(y), Inches(5.4), Inches(0.92), fill=AMBERB)
+    textbox(s, MX + Inches(0.25), Inches(y), Inches(5.0), Inches(0.92), [{"text": lim, "size": 12.5, "color": INK, "line": 1.15}], anchor=MSO_ANCHOR.MIDDLE)
+    arrow(s, MX + Inches(5.5), Inches(y + 0.46), MX + Inches(6.0), Inches(y + 0.46))
+    card(s, MX + Inches(6.1), Inches(y), Inches(5.4), Inches(0.92), fill=GREENB)
+    textbox(s, MX + Inches(6.35), Inches(y), Inches(5.0), Inches(0.92), [{"text": fut, "size": 12.5, "color": INK, "line": 1.15}], anchor=MSO_ANCHOR.MIDDLE)
+    y += 1.05
+textbox(s, MX, Inches(6.6), Inches(11.4), Inches(0.35),
+        [{"text": "Reconocer los límites y trazar el roadmap demuestra madurez técnica y visión de producto.", "size": 11.5, "color": MUTED, "italic": True}])
+footer(s)
+
+# ===== 19 · CONCLUSIONES =====
 s = blank(); header(s, "Cierre", "Conclusiones")
 concl = ["Nova ataca la causa raíz del abandono de carrito: atención inmediata, 24/7 e integrada al sitio.",
          "Solución funcional y desplegada en la nube con costo cero (capa gratuita).",

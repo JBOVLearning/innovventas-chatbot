@@ -117,8 +117,8 @@
         <div>Nova<small><span class="online"></span>En línea · InnovVentas</small></div>
       </div>
       <div class="acts">
-        <span id="nova-clear" title="Nueva conversación">🗑</span>
-        <span id="nova-x" title="Cerrar">✕</span>
+        <span id="nova-clear" title="Nueva conversación"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg></span>
+        <span id="nova-x" title="Cerrar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span>
       </div>
     </div>
     <div id="nova-msgs"></div>
@@ -126,7 +126,7 @@
       <span>${[1,2,3,4,5].map(n=>`<button data-s="${n}">⭐</button>`).join("")}</span></div>
     <div id="nova-foot">
       <input id="nova-input" placeholder="Escribe tu mensaje..." autocomplete="off"/>
-      <button id="nova-send">➤</button>
+      <button id="nova-send" title="Enviar"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></svg></button>
     </div>`;
   document.body.appendChild(box);
 

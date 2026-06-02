@@ -29,6 +29,17 @@
   <!-- GSAP -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <!-- Lucide icons -->
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+
+  <!-- Componentes estilo shadcn/Material (Play CDN soporta @layer/@apply) -->
+  <style type="text/tailwindcss">
+    @layer components {
+      .btn { @apply inline-flex items-center justify-center gap-2 rounded-lg text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/60 focus-visible:ring-offset-2 focus-visible:ring-offset-ink disabled:opacity-50; }
+      .btn-md { @apply h-10 px-4; }
+      .btn-primary { @apply bg-gradient-to-r from-brand to-brand2 text-white shadow-[0_0_24px_rgba(0,87,255,.3)] hover:brightness-110; }
+    }
+  </style>
 
   <style>
     /* El JS genera HTML con var(--brand-error); se conserva */
@@ -81,7 +92,7 @@
   <nav class="border-b border-line/60 glass sticky top-0 z-40">
     <div class="max-w-[1240px] mx-auto px-5 h-16 flex items-center gap-4">
       <a href="index.html" class="flex items-center gap-2.5 font-display font-extrabold text-xl">
-        <span class="grid place-items-center w-9 h-9 rounded-lg bg-gradient-to-br from-brand to-brand2 text-base">⚡</span>
+        <span class="grid place-items-center w-9 h-9 rounded-lg bg-gradient-to-br from-brand to-brand2"><i data-lucide="zap" class="w-5 h-5 text-white"></i></span>
         Innov<span class="text-brand2">Ventas</span>
       </a>
       <span class="text-[11px] font-semibold tracking-wide text-accent bg-accent/15 border border-accent/40 rounded-md px-3 py-1">ADMIN PANEL</span>
@@ -109,11 +120,10 @@
 
     <!-- Toolbar -->
     <div class="flex flex-wrap items-center gap-4 mt-5 mb-7">
-      <button onclick="cargar()"
-        class="inline-flex items-center gap-2 font-semibold text-sm px-4 py-2.5 rounded-lg bg-gradient-to-r from-brand to-brand2 text-white hover:brightness-110 transition shadow-[0_0_24px_rgba(0,87,255,.3)]">🔄 Actualizar</button>
+      <button onclick="cargar()" class="btn btn-primary btn-md"><i data-lucide="refresh-cw" class="w-4 h-4"></i> Actualizar</button>
       <span id="status" class="text-sm text-muted"></span>
       <details class="ml-auto text-sm text-muted">
-        <summary class="hover:text-brand2 transition">⚙ Configurar fuente de datos</summary>
+        <summary class="hover:text-brand2 transition inline-flex items-center gap-1.5 cursor-pointer"><i data-lucide="settings-2" class="w-4 h-4"></i> Configurar fuente de datos</summary>
         <input id="api" />
       </details>
     </div>
@@ -122,28 +132,28 @@
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 mb-6">
       <div data-kpi class="relative bg-gradient-to-b from-surface to-surface2/60 border border-line rounded-lg p-5 overflow-hidden">
         <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-brand to-brand2"></div>
-        <span class="grid place-items-center w-11 h-11 rounded-lg bg-brand/15 text-xl">💬</span>
+        <span class="grid place-items-center w-11 h-11 rounded-lg bg-brand/15"><i data-lucide="message-circle" class="w-5 h-5 text-brand2"></i></span>
         <div class="text-[11px] uppercase tracking-wide text-muted mt-4">Total Conversaciones</div>
         <div id="k-sessions" class="num font-display font-extrabold text-4xl mt-1 leading-none text-fg">—</div>
         <div class="text-xs text-muted mt-2">Sesiones registradas</div>
       </div>
       <div data-kpi class="relative bg-gradient-to-b from-surface to-surface2/60 border border-line rounded-lg p-5 overflow-hidden">
         <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-success to-brand2"></div>
-        <span class="grid place-items-center w-11 h-11 rounded-lg bg-success/15 text-xl">✅</span>
+        <span class="grid place-items-center w-11 h-11 rounded-lg bg-success/15"><i data-lucide="badge-check" class="w-5 h-5 text-success"></i></span>
         <div class="text-[11px] uppercase tracking-wide text-muted mt-4">Tasa de Comprensión</div>
         <div id="k-compr" class="num font-display font-extrabold text-4xl mt-1 leading-none text-success">—</div>
         <div id="k-fallback" class="text-xs text-muted mt-2">&nbsp;</div>
       </div>
       <div data-kpi class="relative bg-gradient-to-b from-surface to-surface2/60 border border-line rounded-lg p-5 overflow-hidden">
         <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#FFD700] to-accent"></div>
-        <span class="grid place-items-center w-11 h-11 rounded-lg bg-[#FFD700]/15 text-xl">⭐</span>
+        <span class="grid place-items-center w-11 h-11 rounded-lg bg-[#FFD700]/15"><i data-lucide="star" class="w-5 h-5 text-[#FFD700]"></i></span>
         <div class="text-[11px] uppercase tracking-wide text-muted mt-4">CSAT Promedio</div>
         <div id="k-csat" class="num font-display font-extrabold text-4xl mt-1 leading-none text-[#FFD700]">—</div>
         <div id="k-csat-stars" class="text-xs text-muted mt-2">&nbsp;</div>
       </div>
       <div data-kpi class="relative bg-gradient-to-b from-surface to-surface2/60 border border-line rounded-lg p-5 overflow-hidden">
         <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-brand2 to-brand"></div>
-        <span class="grid place-items-center w-11 h-11 rounded-lg bg-brand2/15 text-xl">📨</span>
+        <span class="grid place-items-center w-11 h-11 rounded-lg bg-brand2/15"><i data-lucide="mail" class="w-5 h-5 text-brand2"></i></span>
         <div class="text-[11px] uppercase tracking-wide text-muted mt-4">Mensajes de Usuarios</div>
         <div id="k-msgs" class="num font-display font-extrabold text-4xl mt-1 leading-none text-brand2">—</div>
         <div class="text-xs text-muted mt-2">Total acumulado</div>
@@ -172,7 +182,7 @@
     <div class="grid lg:grid-cols-[1fr_1.25fr] gap-5">
       <div data-card class="bg-gradient-to-b from-surface to-surface2/40 border border-line rounded-lg p-5">
         <div class="flex items-center justify-between mb-3">
-          <h3 class="font-display font-bold text-lg">🎯 Intenciones más consultadas</h3>
+          <h3 class="font-display font-bold text-lg flex items-center gap-2"><i data-lucide="target" class="w-5 h-5 text-brand2"></i> Intenciones más consultadas</h3>
           <span class="inline-flex items-center gap-1.5 text-[11px] text-success font-semibold"><span class="w-1.5 h-1.5 rounded-full bg-success animate-pulse"></span>en vivo</span>
         </div>
         <div id="intents-empty" class="text-muted text-sm text-center py-7" style="display:none">Aún no hay consultas registradas.</div>
@@ -184,7 +194,7 @@
       </div>
       <div data-card class="bg-gradient-to-b from-surface to-surface2/40 border border-line rounded-lg p-5">
         <div class="flex items-center justify-between mb-3">
-          <h3 class="font-display font-bold text-lg">🕐 Últimas conversaciones</h3>
+          <h3 class="font-display font-bold text-lg flex items-center gap-2"><i data-lucide="history" class="w-5 h-5 text-brand2"></i> Últimas conversaciones</h3>
           <span class="tag-demo">datos de ejemplo</span>
         </div>
         <div class="overflow-x-auto">
@@ -313,6 +323,7 @@
   <!-- Mejora visual (GSAP): reveal de tarjetas + count-up de KPIs. No altera la lógica de datos. -->
   <script>
     (function () {
+      if (window.lucide) lucide.createIcons();
       if (!window.gsap) return;
       if (window.ScrollTrigger) gsap.registerPlugin(ScrollTrigger);
 
