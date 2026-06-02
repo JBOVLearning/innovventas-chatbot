@@ -6,7 +6,7 @@
   <title>InnovVentas — Panel de Métricas de Nova</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
   <!-- Tailwind CSS (CDN, sin build) -->
@@ -20,7 +20,7 @@
             surface2: '#1C2333', line: '#1E2D40', fg: '#F0F4FF', muted: '#8899BB',
             accent: '#FF6B2B', success: '#00D97E', danger: '#FF4D4D'
           },
-          fontFamily: { display: ['Syne', 'sans-serif'], body: ['"DM Sans"', 'system-ui', 'sans-serif'] }
+          fontFamily: { display: ['Poppins', 'sans-serif'], body: ['Roboto', 'system-ui', 'sans-serif'] }
         }
       }
     }
@@ -42,15 +42,15 @@
     /* Tablas (las filas las inyecta el JS, por eso el estilo va aquí) */
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
     thead th { text-align: left; color: #8899BB; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: .4px; padding: 11px 12px; background: #161f30; border-bottom: 1px solid #1E2D40; }
-    thead th:first-child { border-top-left-radius: 10px; }
-    thead th:last-child { border-top-right-radius: 10px; }
+    thead th:first-child { border-top-left-radius: 8px; }
+    thead th:last-child { border-top-right-radius: 8px; }
     tbody td { padding: 12px; border-bottom: 1px solid #1E2D40; color: #F0F4FF; }
     tbody tr:last-child td { border-bottom: 0; }
     tbody tr { transition: background .15s; }
     tbody tr:hover { background: #1C2333; }
     .bar { height: 7px; border-radius: 5px; background: #1E2D40; overflow: hidden; min-width: 90px; }
     .bar i { display: block; height: 100%; border-radius: 5px; }
-    .badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; }
+    .badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 7px; }
     .b-ok { background: rgba(0,217,126,.15); color: #00D97E; }
     .b-esc { background: rgba(255,107,43,.15); color: #FF6B2B; }
     .b-act { background: rgba(0,87,255,.18); color: #00C2FF; }
@@ -60,8 +60,8 @@
     .tag-demo { font-size: 10px; letter-spacing: .5px; text-transform: uppercase; color: #FF6B2B; border: 1px solid rgba(255,107,43,.5); border-radius: 6px; padding: 2px 8px; font-weight: 600; }
 
     /* Selector de período (el JS togglea .active) */
-    .segment { display: flex; background: #111827; border: 1px solid #1E2D40; border-radius: 12px; padding: 4px; gap: 2px; }
-    .segment button { background: none; border: 0; color: #8899BB; padding: 8px 15px; border-radius: 9px; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; transition: .15s; }
+    .segment { display: flex; background: #111827; border: 1px solid #1E2D40; border-radius: 9px; padding: 4px; gap: 2px; }
+    .segment button { background: none; border: 0; color: #8899BB; padding: 8px 15px; border-radius: 6px; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; transition: .15s; }
     .segment button:hover { color: #F0F4FF; }
     .segment button.active { background: linear-gradient(135deg, #0057FF, #00C2FF); color: #fff; }
 
@@ -81,10 +81,10 @@
   <nav class="border-b border-line/60 glass sticky top-0 z-40">
     <div class="max-w-[1240px] mx-auto px-5 h-16 flex items-center gap-4">
       <a href="index.html" class="flex items-center gap-2.5 font-display font-extrabold text-xl">
-        <span class="grid place-items-center w-9 h-9 rounded-xl bg-gradient-to-br from-brand to-brand2 text-base">⚡</span>
+        <span class="grid place-items-center w-9 h-9 rounded-lg bg-gradient-to-br from-brand to-brand2 text-base">⚡</span>
         Innov<span class="text-brand2">Ventas</span>
       </a>
-      <span class="text-[11px] font-semibold tracking-wide text-accent bg-accent/15 border border-accent/40 rounded-full px-3 py-1">ADMIN PANEL</span>
+      <span class="text-[11px] font-semibold tracking-wide text-accent bg-accent/15 border border-accent/40 rounded-md px-3 py-1">ADMIN PANEL</span>
       <div class="ml-auto flex items-center gap-5 text-sm text-muted">
         <a href="index.html" class="hover:text-brand2 transition">← Volver a la tienda</a>
         <span class="hidden sm:inline">Panel de Métricas — Nova</span>
@@ -98,7 +98,7 @@
     <div class="flex flex-wrap justify-between items-end gap-4 mt-8 mb-1">
       <div>
         <h1 class="font-display font-extrabold text-3xl md:text-4xl flex items-center gap-3">
-          <span class="inline-block w-1.5 h-8 rounded-full bg-gradient-to-b from-brand to-brand2"></span>Dashboard de Métricas
+          <span class="inline-block w-1.5 h-8 rounded bg-gradient-to-b from-brand to-brand2"></span>Dashboard de Métricas
         </h1>
         <p id="subtitle" class="text-muted text-sm mt-2">Desempeño del asistente Nova · cargando…</p>
       </div>
@@ -110,7 +110,7 @@
     <!-- Toolbar -->
     <div class="flex flex-wrap items-center gap-4 mt-5 mb-7">
       <button onclick="cargar()"
-        class="inline-flex items-center gap-2 font-semibold text-sm px-4 py-2.5 rounded-xl bg-gradient-to-r from-brand to-brand2 text-white hover:brightness-110 transition shadow-[0_0_24px_rgba(0,87,255,.3)]">🔄 Actualizar</button>
+        class="inline-flex items-center gap-2 font-semibold text-sm px-4 py-2.5 rounded-lg bg-gradient-to-r from-brand to-brand2 text-white hover:brightness-110 transition shadow-[0_0_24px_rgba(0,87,255,.3)]">🔄 Actualizar</button>
       <span id="status" class="text-sm text-muted"></span>
       <details class="ml-auto text-sm text-muted">
         <summary class="hover:text-brand2 transition">⚙ Configurar fuente de datos</summary>
@@ -120,30 +120,30 @@
 
     <!-- KPIs (reales desde /api/metrics) -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 mb-6">
-      <div data-kpi class="relative bg-gradient-to-b from-surface to-surface2/60 border border-line rounded-2xl p-5 overflow-hidden">
+      <div data-kpi class="relative bg-gradient-to-b from-surface to-surface2/60 border border-line rounded-lg p-5 overflow-hidden">
         <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-brand to-brand2"></div>
-        <span class="grid place-items-center w-11 h-11 rounded-xl bg-brand/15 text-xl">💬</span>
+        <span class="grid place-items-center w-11 h-11 rounded-lg bg-brand/15 text-xl">💬</span>
         <div class="text-[11px] uppercase tracking-wide text-muted mt-4">Total Conversaciones</div>
         <div id="k-sessions" class="num font-display font-extrabold text-4xl mt-1 leading-none text-fg">—</div>
         <div class="text-xs text-muted mt-2">Sesiones registradas</div>
       </div>
-      <div data-kpi class="relative bg-gradient-to-b from-surface to-surface2/60 border border-line rounded-2xl p-5 overflow-hidden">
+      <div data-kpi class="relative bg-gradient-to-b from-surface to-surface2/60 border border-line rounded-lg p-5 overflow-hidden">
         <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-success to-brand2"></div>
-        <span class="grid place-items-center w-11 h-11 rounded-xl bg-success/15 text-xl">✅</span>
+        <span class="grid place-items-center w-11 h-11 rounded-lg bg-success/15 text-xl">✅</span>
         <div class="text-[11px] uppercase tracking-wide text-muted mt-4">Tasa de Comprensión</div>
         <div id="k-compr" class="num font-display font-extrabold text-4xl mt-1 leading-none text-success">—</div>
         <div id="k-fallback" class="text-xs text-muted mt-2">&nbsp;</div>
       </div>
-      <div data-kpi class="relative bg-gradient-to-b from-surface to-surface2/60 border border-line rounded-2xl p-5 overflow-hidden">
+      <div data-kpi class="relative bg-gradient-to-b from-surface to-surface2/60 border border-line rounded-lg p-5 overflow-hidden">
         <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#FFD700] to-accent"></div>
-        <span class="grid place-items-center w-11 h-11 rounded-xl bg-[#FFD700]/15 text-xl">⭐</span>
+        <span class="grid place-items-center w-11 h-11 rounded-lg bg-[#FFD700]/15 text-xl">⭐</span>
         <div class="text-[11px] uppercase tracking-wide text-muted mt-4">CSAT Promedio</div>
         <div id="k-csat" class="num font-display font-extrabold text-4xl mt-1 leading-none text-[#FFD700]">—</div>
         <div id="k-csat-stars" class="text-xs text-muted mt-2">&nbsp;</div>
       </div>
-      <div data-kpi class="relative bg-gradient-to-b from-surface to-surface2/60 border border-line rounded-2xl p-5 overflow-hidden">
+      <div data-kpi class="relative bg-gradient-to-b from-surface to-surface2/60 border border-line rounded-lg p-5 overflow-hidden">
         <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-brand2 to-brand"></div>
-        <span class="grid place-items-center w-11 h-11 rounded-xl bg-brand2/15 text-xl">📨</span>
+        <span class="grid place-items-center w-11 h-11 rounded-lg bg-brand2/15 text-xl">📨</span>
         <div class="text-[11px] uppercase tracking-wide text-muted mt-4">Mensajes de Usuarios</div>
         <div id="k-msgs" class="num font-display font-extrabold text-4xl mt-1 leading-none text-brand2">—</div>
         <div class="text-xs text-muted mt-2">Total acumulado</div>
@@ -152,14 +152,14 @@
 
     <!-- Gráficos -->
     <div class="grid lg:grid-cols-[1.5fr_1fr] gap-5 mb-6">
-      <div data-card class="bg-gradient-to-b from-surface to-surface2/40 border border-line rounded-2xl p-5">
+      <div data-card class="bg-gradient-to-b from-surface to-surface2/40 border border-line rounded-lg p-5">
         <div class="flex items-center justify-between mb-4">
           <h3 class="font-display font-bold text-lg">Conversaciones por día</h3>
           <span class="tag-demo">datos de ejemplo</span>
         </div>
         <canvas id="line" height="200"></canvas>
       </div>
-      <div data-card class="bg-gradient-to-b from-surface to-surface2/40 border border-line rounded-2xl p-5">
+      <div data-card class="bg-gradient-to-b from-surface to-surface2/40 border border-line rounded-lg p-5">
         <div class="flex items-center justify-between mb-4">
           <h3 class="font-display font-bold text-lg">Top Intenciones</h3>
           <span class="inline-flex items-center gap-1.5 text-[11px] text-success font-semibold"><span class="w-1.5 h-1.5 rounded-full bg-success animate-pulse"></span>en vivo</span>
@@ -170,7 +170,7 @@
 
     <!-- Tablas -->
     <div class="grid lg:grid-cols-[1fr_1.25fr] gap-5">
-      <div data-card class="bg-gradient-to-b from-surface to-surface2/40 border border-line rounded-2xl p-5">
+      <div data-card class="bg-gradient-to-b from-surface to-surface2/40 border border-line rounded-lg p-5">
         <div class="flex items-center justify-between mb-3">
           <h3 class="font-display font-bold text-lg">🎯 Intenciones más consultadas</h3>
           <span class="inline-flex items-center gap-1.5 text-[11px] text-success font-semibold"><span class="w-1.5 h-1.5 rounded-full bg-success animate-pulse"></span>en vivo</span>
@@ -182,7 +182,7 @@
           </thead><tbody></tbody></table>
         </div>
       </div>
-      <div data-card class="bg-gradient-to-b from-surface to-surface2/40 border border-line rounded-2xl p-5">
+      <div data-card class="bg-gradient-to-b from-surface to-surface2/40 border border-line rounded-lg p-5">
         <div class="flex items-center justify-between mb-3">
           <h3 class="font-display font-bold text-lg">🕐 Últimas conversaciones</h3>
           <span class="tag-demo">datos de ejemplo</span>
