@@ -47,26 +47,43 @@
 
   // ---------- Estilos ----------
   const css = `
-  #nova-fab{position:fixed;bottom:20px;right:20px;width:60px;height:60px;border-radius:50%;
-    background:#2563eb;color:#fff;border:none;cursor:pointer;font-size:26px;box-shadow:0 4px 12px rgba(0,0,0,.25);z-index:99999}
-  #nova-box{position:fixed;bottom:90px;right:20px;width:340px;max-width:92vw;height:460px;max-height:75vh;
-    background:#fff;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.25);display:none;flex-direction:column;
-    overflow:hidden;font-family:system-ui,Segoe UI,Roboto,sans-serif;z-index:99999}
-  #nova-box.open{display:flex}
-  #nova-head{background:#2563eb;color:#fff;padding:12px 16px;font-weight:600;display:flex;justify-content:space-between;align-items:center}
-  #nova-head small{font-weight:400;opacity:.85;display:block;font-size:11px}
+  #nova-fab{position:fixed;bottom:24px;right:24px;width:56px;height:56px;border-radius:50%;
+    background:linear-gradient(135deg,#0057FF,#00C2FF);color:#fff;border:none;cursor:pointer;font-size:24px;
+    box-shadow:0 4px 20px rgba(0,87,255,.5);z-index:99999;transition:transform .18s,box-shadow .18s}
+  #nova-fab:hover{transform:scale(1.1);box-shadow:0 6px 26px rgba(0,87,255,.7)}
+  #nova-fab::after{content:"";position:absolute;top:10px;right:10px;width:11px;height:11px;border-radius:50%;
+    background:#FF4D4D;border:2px solid #0A0F1E;animation:nova-pulse 1.6s infinite}
+  @keyframes nova-pulse{0%{box-shadow:0 0 0 0 rgba(255,77,77,.6)}70%{box-shadow:0 0 0 8px rgba(255,77,77,0)}100%{box-shadow:0 0 0 0 rgba(255,77,77,0)}}
+  #nova-box{position:fixed;bottom:88px;right:24px;width:340px;max-width:92vw;height:480px;max-height:78vh;
+    background:#111827;border:1px solid #1E2D40;border-radius:16px;box-shadow:0 24px 64px rgba(0,0,0,.5);
+    display:flex;flex-direction:column;overflow:hidden;font-family:'DM Sans',system-ui,Segoe UI,Roboto,sans-serif;z-index:99999;
+    opacity:0;visibility:hidden;transform:scale(.8) translateY(20px);transition:opacity .2s ease-out,transform .2s ease-out,visibility .2s}
+  #nova-box.open{opacity:1;visibility:visible;transform:scale(1) translateY(0)}
+  #nova-head{background:linear-gradient(135deg,#0057FF,#00C2FF);color:#fff;height:56px;padding:0 14px;display:flex;justify-content:space-between;align-items:center}
+  #nova-head .who{display:flex;align-items:center;gap:10px;font-weight:600;font-size:15px}
+  #nova-head .avatar{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.2);display:grid;place-items:center;font-weight:700;font-family:'Syne',sans-serif}
+  #nova-head .who small{display:flex;align-items:center;gap:5px;font-weight:400;opacity:.92;font-size:11px}
+  #nova-head .online{width:7px;height:7px;border-radius:50%;background:#00D97E;display:inline-block;animation:nova-pulse2 1.8s infinite}
+  @keyframes nova-pulse2{0%{box-shadow:0 0 0 0 rgba(0,217,126,.6)}70%{box-shadow:0 0 0 6px rgba(0,217,126,0)}100%{box-shadow:0 0 0 0 rgba(0,217,126,0)}}
   #nova-head .acts{display:flex;gap:12px;align-items:center}
   #nova-head .acts span{cursor:pointer;opacity:.9;font-size:15px}
   #nova-head .acts span:hover{opacity:1}
-  #nova-msgs{flex:1;overflow-y:auto;padding:14px;background:#f8fafc;display:flex;flex-direction:column;gap:8px}
-  .nova-msg{max-width:80%;padding:9px 12px;border-radius:12px;font-size:14px;line-height:1.4;white-space:pre-wrap;word-wrap:break-word}
-  .nova-user{align-self:flex-end;background:#2563eb;color:#fff;border-bottom-right-radius:3px}
-  .nova-bot{align-self:flex-start;background:#fff;border:1px solid #e2e8f0;color:#1e293b;border-bottom-left-radius:3px}
-  .nova-typing{align-self:flex-start;color:#64748b;font-size:13px;font-style:italic}
-  #nova-foot{display:flex;border-top:1px solid #e2e8f0;padding:8px;gap:6px;background:#fff}
-  #nova-input{flex:1;border:1px solid #cbd5e1;border-radius:20px;padding:9px 14px;font-size:14px;outline:none}
-  #nova-send{background:#2563eb;color:#fff;border:none;border-radius:20px;padding:0 16px;cursor:pointer;font-size:14px}
-  #nova-csat{padding:10px 14px;text-align:center;border-top:1px solid #e2e8f0;background:#fff;font-size:13px}
+  #nova-msgs{flex:1;overflow-y:auto;padding:16px;background:#0A0F1E;display:flex;flex-direction:column;gap:9px}
+  .nova-msg{max-width:82%;padding:9px 13px;font-size:14px;line-height:1.45;white-space:pre-wrap;word-wrap:break-word}
+  .nova-user{align-self:flex-end;background:#0057FF;color:#fff;border-radius:12px 12px 2px 12px}
+  .nova-bot{align-self:flex-start;background:#1C2333;color:#F0F4FF;border-radius:12px 12px 12px 2px}
+  .nova-typing{align-self:flex-start;background:#1C2333;border-radius:12px 12px 12px 2px;padding:11px 14px;display:flex;gap:4px}
+  .nova-typing span{width:7px;height:7px;border-radius:50%;background:#8899BB;animation:nova-bounce 1.2s infinite}
+  .nova-typing span:nth-child(2){animation-delay:.2s}
+  .nova-typing span:nth-child(3){animation-delay:.4s}
+  @keyframes nova-bounce{0%,60%,100%{transform:translateY(0);opacity:.5}30%{transform:translateY(-5px);opacity:1}}
+  #nova-foot{display:flex;align-items:center;border-top:1px solid #1E2D40;padding:10px;gap:8px;background:#111827}
+  #nova-input{flex:1;border:1px solid #1E2D40;background:#1C2333;color:#F0F4FF;border-radius:24px;padding:10px 16px;font-size:14px;outline:none}
+  #nova-input::placeholder{color:#8899BB}
+  #nova-input:focus{border-color:#0057FF}
+  #nova-send{background:#0057FF;color:#fff;border:none;border-radius:50%;width:40px;height:40px;cursor:pointer;font-size:15px;flex:0 0 auto}
+  #nova-send:hover{background:#0046cc}
+  #nova-csat{padding:11px 14px;text-align:center;border-top:1px solid #1E2D40;background:#111827;font-size:13px;color:#F0F4FF}
   #nova-csat button{font-size:20px;background:none;border:none;cursor:pointer}
   `;
   const style = document.createElement("style");
@@ -83,7 +100,10 @@
   box.id = "nova-box";
   box.innerHTML = `
     <div id="nova-head">
-      <div>Nova <small>Asistente de InnovVentas</small></div>
+      <div class="who">
+        <span class="avatar">N</span>
+        <div>Nova<small><span class="online"></span>En línea · InnovVentas</small></div>
+      </div>
       <div class="acts">
         <span id="nova-clear" title="Nueva conversación">🗑</span>
         <span id="nova-x" title="Cerrar">✕</span>
@@ -135,7 +155,7 @@
 
     const typing = document.createElement("div");
     typing.className = "nova-typing";
-    typing.textContent = "Nova está escribiendo...";
+    typing.innerHTML = "<span></span><span></span><span></span>";
     msgs.appendChild(typing);
     msgs.scrollTop = msgs.scrollHeight;
 
